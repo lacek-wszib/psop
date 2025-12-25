@@ -1,19 +1,21 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
+#include <stdbool.h>
 
 /**
- * Typ definiujący numer rejestracyjny pojazdu
+ * Typy definiujące dane pojazdu
  */
 typedef char LicencePlate[16];
+typedef char Brand[64];
+typedef char Model[64];
 
 /**
  * Struktura reprezentująca pojazd
  */
 typedef struct vehicle {
     LicencePlate licencePlate;  // nr rejestracyjny
-    char brand[64];             // marka
-    char model[64];             // model
-    char colour[64];            // kolor
+    Brand brand;                // marka
+    Model model;                // model
 } Vehicle;
 
 /**
@@ -25,29 +27,58 @@ typedef struct vehicleDatabase {
 } VehicleDatabase;
 
 /**
+ * Inicjalizacja bazy pojazdów
+ */
+void initVehicleDatabase();
+
+/**
+ * Zwolnienie pamięci zaalokowanej dla bazy pojazdów
+ */
+void freeVehicleDatabase();
+
+/**
  * Dodanie pojazdu do bazy
  * @param newVehicle - wskaźnik na strukturę pojazdu do dodania
  */
 void addVehicle(Vehicle *newVehicle);
 
 /**
+ * Dodanie pojazdu do bazy i zapisanie go do pliku
+ * @param newVehicle - wskaźnik na strukturę pojazdu do dodania
+ */
+void addVehicleAndSave(Vehicle *newVehicle);
+
+/**
  * Usunięcie pojazdu z bazy
  * @param licencePlate - numer rejestracyjny pojazdu do usunięcia
- * @return 1 jeśli usunięto, 0 jeśli nie znaleziono pojazdu
+ * @return true jeśli usunięto, false jeśli pojazd nie został znaleziony
  */
-int removeVehicle(char *licencePlate);
+bool removeVehicle(LicencePlate licencePlate);
 
 /**
  * Sprawdzenie czy pojazd znajduje się w bazie
  * @param licencePlate - numer rejestracyjny pojazdu do sprawdzenia
- * @return 1 jeśli pojazd jest w bazie, 0 jeśli nie
+ * @return true jeśli pojazd znajduje się w bazie, false jeśli nie
  */
-int checkVehicle(char *licencePlate);
+bool checkVehicle(LicencePlate licencePlate);
+
+/**
+ * Wyszukanie pojazdu w bazie
+ * @param licencePlate - numer rejestracyjny pojazdu do wyszukania
+ * @return wskaźnik na strukturę pojazdu jeśli znaleziono, NULL jeśli nie znaleziono
+ */
+Vehicle *findVehicle(LicencePlate licencePlate);
 
 /**
  * Pobranie bazy pojazdów
  * @return struktura zawierająca dane bazy pojazdów
  */
 VehicleDatabase getVehicleDatabase();
+
+/**
+ * Wczytanie pojazdów z katalogu danych
+ * @return liczba wczytanych pojazdów
+ */
+int loadVehicles();
 
 #endif

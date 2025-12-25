@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "input_utils.h"
+#include "parking.h"
 #include "vehicle.h"
+#include "string_utils.h"
 
 void printAllVehicleList();
 void handleVehicleAdd();
@@ -8,7 +10,6 @@ void handleVehicleRemove();
 
 
 void displayVehicleManagmentMenu() {
-
     char userInput[3];
     int vehicleMenuChoice = -1;
 
@@ -19,7 +20,6 @@ void displayVehicleManagmentMenu() {
         printf("+=======================================+\n");
         printf("|             BAZA POJAZDÓW             |\n");
         printf("+=======================================+\n");
-        printf("| Dostępne opcje:                       |\n");
         printf("| 1 => Wyświetlenie listy pojazdów      |\n");
         printf("| 2 => Dodanie pojazdu do bazy          |\n");
         printf("| 3 => Usunięcie pojazdu z bazy         |\n");
@@ -28,20 +28,20 @@ void displayVehicleManagmentMenu() {
         printf(">> ");
 
         // wczytanie opcji z klawiatury
-        if (!readLineFromInput(userInput, stdin)
+        if (!readLineFromInput(userInput, sizeof userInput, stdin)
             || sscanf(userInput, "%d", &vehicleMenuChoice) != 1) {
             printf("Niepoprawna wartość, wybierz jedną z dostępnych opcji\n");
             continue;
         }
 
         switch (vehicleMenuChoice) {
-            case (1):
+            case 1:
                 printAllVehicleList();
                 break;
-            case (2):
+            case 2:
                 handleVehicleAdd();
                 break;
-            case (3):
+            case 3:
                 handleVehicleRemove();
                 break;
         }
@@ -50,7 +50,7 @@ void displayVehicleManagmentMenu() {
 
 void printAllVehicleList() {
     // pobranie listy pojazdów
-    VehicleDatabase vehicleDatabase = getVehicleDatabase();
+    const VehicleDatabase vehicleDatabase = getVehicleDatabase();
     if (vehicleDatabase.vehicleCount == 0) {
         printf("Brak pojazdów w bazie\n");
         return;
@@ -59,8 +59,7 @@ void printAllVehicleList() {
     printf("===============\nLista pojazdów:\n===============\n");
     for (int i = 0; i < vehicleDatabase.vehicleCount; i++) {
         Vehicle *vehicle = &vehicleDatabase.vehicles[i];
-        printf("Nr rejestracyjny: %s\nMarka pojazdu: %s\nModel pojazdu: %s\nKolor pojazdu: %s\n===\n",
-               vehicle->licencePlate, vehicle->brand, vehicle->model, vehicle->colour);
+        printf("%s %s %s\n", vehicle->licencePlate, vehicle->brand, vehicle->model);
     }
 }
 
@@ -72,15 +71,23 @@ void handleVehicleAdd() {
     // numer rejstracyjny
     do {
         printf("Podaj numer rejestracyjny >>");
-        inputStatus = readLineFromInput(newVehicle.licencePlate, stdin);
+        inputStatus = readLineFromInput(newVehicle.licencePlate, sizeof newVehicle.licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(newVehicle.licencePlate, sizeof newVehicle.licencePlate);
+
+    // sprawdzenie czy pojazd już jest w bazie
+    if (checkVehicle(newVehicle.licencePlate)) {
+        printf("Pojazd o numerze rejestracyjnym %s już znajduje się w bazie\n", newVehicle.licencePlate);
+        return;
+    }
+
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.brand, stdin);
+        inputStatus = readLineFromInput(newVehicle.brand, sizeof newVehicle.brand, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowa marka pojadu\n");
         }
@@ -88,38 +95,36 @@ void handleVehicleAdd() {
     // model pojazdu
     do {
         printf("Podaj model pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.model, stdin);
+        inputStatus = readLineFromInput(newVehicle.model, sizeof newVehicle.model, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy model pojadu\n");
         }
     } while (!inputStatus);
-    // kolor pojazdu
-    do {
-        printf("Podaj kolor pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.colour, stdin);
-        if (!inputStatus) {
-            printf("Nieprawidłowy kolor pojadu\n");
-        }
-    } while (!inputStatus);
 
     // dodanie pojazdu do bazy
-    addVehicle(&newVehicle);
+    addVehicleAndSave(&newVehicle);
 }
 
 void handleVehicleRemove() {
-    char licencePlate[16];
+    LicencePlate licencePlate;
     int inputStatus = 0;
     // numer rejstracyjny
     do {
         printf("Podaj numer rejestracyjny pojazdu do usunięcia>>");
-        inputStatus = readLineFromInput(licencePlate, stdin);
+        inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(licencePlate, sizeof licencePlate);
 
+    // sprawdzenie czy pojazd jest na parkingu
+    if (checkParkingVehicle(licencePlate)) {
+        printf("Nie można usunąć z bazy pojazdu, który znajduje się na parkingu\n");
+        return;
+    }
     // usunięcie pojazdu z bazy
-    if (!removeVehicle(licencePlate)) {
+    if (removeVehicle(licencePlate)) {
         printf("Usunięto pojazdu o numerze rejestracyjnym %s\n", licencePlate);
     } else {
         printf("Nie znaleziono pojazdu o numerze rejestracyjnym %s\n", licencePlate);

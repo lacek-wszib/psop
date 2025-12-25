@@ -1,44 +1,189 @@
 #include <stdio.h>
-#include "vehicle.h"
+#include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include "vehicle.h"
+#include "config.h"
+#include "string_utils.h"
 
-Vehicle vehicles[100];
+
+// początkowy rozmiar bazy pojazdów
+const int INITIAL_DATABASE_SIZE = 2;
+
+void getVehicleFileName(char *fileName, size_t size, LicencePlate licencePlate);
+void saveVehicle(Vehicle *vehicle);
+
+// baza pojazdów
+Vehicle *vehicles = NULL;
+int vehicleCapacity = 0;
 int vehicleCount = 0;
 
+void initVehicleDatabase() {
+    vehicles = malloc(INITIAL_DATABASE_SIZE * sizeof(Vehicle));
+    if (!vehicles) {
+        printf("Błąd alokacji pamięci dla bazy pojazdów\n");
+        exit(EXIT_FAILURE);
+    }
+    vehicleCapacity = INITIAL_DATABASE_SIZE;
+}
+
+void freeVehicleDatabase() {
+    free(vehicles);
+    vehicles = NULL;
+    vehicleCapacity = 0;
+    vehicleCount = 0;
+}
+
+/**
+ * Sprawdzenie czy baza pojazdów ma wystarczającą pojemność.
+ * W razie potrzeby następuje alokacja potrzebnej pamięci i zwiększenie pojemności bazy.
+ * @param newVehicleCount - nowa ilość pojazdów po dodaniu
+ */
+void checkDatabaseCapacity(int newVehicleCount) {
+    if (newVehicleCount > vehicleCapacity) {
+        const int newCapacity = vehicleCapacity * 2;
+        Vehicle *tmp = realloc(vehicles, newCapacity * sizeof(Vehicle));
+        if (!tmp) {
+            printf("Błąd alokacji pamięci dla bazy pojazdów\n");
+            exit(EXIT_FAILURE);
+        }
+        vehicles = tmp;
+        vehicleCapacity = newCapacity;
+    }
+}
+
 void addVehicle(Vehicle *newVehicle) {
-    if (vehicleCount < 100) {
-        vehicleCount++;
-        vehicles[vehicleCount - 1] = *newVehicle;
-        printf("Dodano do bazy pojazd o numerze rejestracyjnym %s\n", newVehicle->licencePlate);
-    } else {
-        printf("Baza pojazdów jest pełna, nie można dodać nowego pojazdu\n");
+    // sprawdzenie pojemności bazy
+    checkDatabaseCapacity(vehicleCount + 1);
+    // znalezienie miejsca wstawienia (alfabetycznie wg numeru rejestracyjnego)
+    int pos = 0;
+    while (pos < vehicleCount && strcmp(vehicles[pos].licencePlate, newVehicle->licencePlate) < 0) {
+        pos++;
     }
+    // przesunięcie elementów w prawo
+    for (int j = vehicleCount; j > pos; j--) {
+        vehicles[j] = vehicles[j - 1];
+    }
+    // dodanie pojazdu do bazy
+    vehicles[pos] = *newVehicle;
+    vehicleCount++;
 }
 
-int removeVehicle(char *licencePlate) {
-    // wyszukanie pojazdu do usunięcia
-    for (int i = 0; i < vehicleCount; i++) {
-       if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
-           // przesunięcie kolejnych rekordów
-           for (int j = i; j < vehicleCount; j++) {
-               vehicles[j] = vehicles[j + 1];
-           }
-           // zmniejszenie liczby pojazdów w bazie
-           vehicleCount--;
-           // zwrócenie sukcesu
-           return 1;
-       }
-    }
-    return 0;
+void addVehicleAndSave(Vehicle *newVehicle) {
+    // dodanie pojazdu
+    addVehicle(newVehicle);
+    printf("Dodano do bazy pojazd %s %s o numerze rejestracyjnym %s\n", newVehicle->brand, newVehicle->model, newVehicle->licencePlate);
+    // zapisanie pojazdu
+    saveVehicle(newVehicle);
 }
 
-int checkVehicle(char *licencePlate) {
-    for (int i = 0; i < vehicleCount; i++) {
-        if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
-            return 1; // pojazd znaleziony
+/**
+ * Zapisanie pojazdu do pliku
+ * @param vehicle - wskaźnik na strukturę pojazdu do zapisania
+ */
+void saveVehicle(Vehicle *vehicle) {
+    // otwarcie pliku do zapisu
+    char fileName[256];
+    getVehicleFileName(fileName, sizeof fileName, vehicle->licencePlate);
+    FILE *vehicleFile = fopen(fileName, "w");
+    // zapisanie tekstu do pliku
+    fprintf(vehicleFile, "%s\n%s", vehicle->brand, vehicle->model);
+    // zamknięcie pliku
+    fclose(vehicleFile);
+}
+
+/**
+ * Pobranie nazwy pliku pojazdu na podstawie numeru rejestracyjnego
+ * @param fileName - bufor na nazwę pliku
+ * @param size - rozmiar bufora
+ * @param licencePlate - numer rejestracyjny pojazdu
+ */
+void getVehicleFileName(char *fileName, size_t size, LicencePlate licencePlate) {
+    snprintf(fileName, size, "%s%s", VEHICLES_DATA_DIR_NAME, licencePlate);
+}
+
+int loadVehicles() {
+    // otwarcie katalogu z danymi pojazdów
+    DIR *dir = opendir(VEHICLES_DATA_DIR_NAME);
+    struct dirent *entry;
+    // wczytanie plików z danymi pojazdów
+    int loaded = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") != 0
+            && strcmp(entry->d_name, "..") != 0) {
+            // pełna ścieżka pliku
+            LicencePlate licencePlate;
+            stringCopy(licencePlate, sizeof licencePlate, entry->d_name);
+            char vehiclePath[256];
+            getVehicleFileName(vehiclePath, sizeof vehiclePath, licencePlate);
+
+            // otwarcie pliku z danymi pojazdu
+            FILE *vehicleFile = fopen(vehiclePath, "r");
+            if (!vehicleFile) {
+                printf("Nie udało się otworzyć pliku z danymi pojazdu %s\n", vehiclePath);
+                exit(EXIT_FAILURE);
+            }
+
+            // utworzenie struktury pojazdu
+            Vehicle vehicle;
+            strcpy(vehicle.licencePlate, licencePlate);
+
+            // wczytanie danych pojazdu z pliku
+            if (fscanf(vehicleFile, "%s\n%s", vehicle.brand, vehicle.model) != 2) {
+                printf("Niepoprawne dane pojazdu w pliku %s\n", vehiclePath);
+                exit(EXIT_FAILURE);
+            }
+            fclose(vehicleFile);
+
+            // dodanie pojadu do bazy
+            addVehicle(&vehicle);
+            loaded++;
         }
     }
-    return 0; // pojazd nie znajduje się w bazie
+
+    closedir(dir);
+    return loaded; // liczba wczytanych pojazdów
+}
+
+bool removeVehicle(LicencePlate licencePlate) {
+    // wyszukanie pojazdu do usunięcia
+    for (int i = 0; i < vehicleCount; i++) {
+        if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
+            // przesunięcie kolejnych rekordów
+            for (int j = i; j < vehicleCount; j++) {
+                vehicles[j] = vehicles[j + 1];
+            }
+            // zmniejszenie liczby pojazdów w bazie
+            vehicleCount--;
+            // usunięcie pliku z danymi pojazdu
+            char fileName[256];
+            getVehicleFileName(fileName, sizeof fileName, licencePlate);
+            if (remove(fileName) != 0) {
+                printf("Nie udało się usunąć pliku z danymi pojazdu %s\n", fileName);
+            }
+            // zwrócenie sukcesu
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkVehicle(LicencePlate licencePlate) {
+    for (int i = 0; i < vehicleCount; i++) {
+        if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
+            return true; // pojazd znaleziony
+        }
+    }
+    return false; // pojazd nie znajduje się w bazie
+}
+
+Vehicle *findVehicle(LicencePlate licencePlate) {
+    for (int i = 0; i < vehicleCount; i++) {
+        if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
+            return &vehicles[i];
+        }
+    }
+    return NULL; // brak pojazdu
 }
 
 VehicleDatabase getVehicleDatabase() {

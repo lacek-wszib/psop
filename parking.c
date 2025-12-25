@@ -1,53 +1,239 @@
 #include <time.h>
+#include <inttypes.h>
+#include <dirent.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "parking.h"
 #include "vehicle.h"
+#include "config.h"
+#include "string_utils.h"
 
-ParkingEntry parkedCars[100];
-int parkedCarCount = 0;
+ParkingEntry *parkedCars = NULL;
+int parkedCarsCapacity = 0;
+int parkedCarsCount = 0;
 
-int registerVehicleEntry(LicencePlate licencePlate) {
-    if (parkedCarCount < 100) {
-        parkedCarCount++;
-        // informacje o pojeździe na parkingu
-        ParkingEntry parkingEntry;
-        strncpy(parkingEntry.licencePlate, licencePlate, sizeof(parkingEntry.licencePlate) - 1);
-        parkingEntry.entryTime = time(NULL);
-        // dodanie pojazdu do tablicy
-        parkedCars[parkedCarCount - 1] = parkingEntry;
-        // sukces
-        return 1;
+void getParkingEntryFileName(char *fileName, size_t size, LicencePlate licencePlate);
+void saveParkingEntry(ParkingEntry *parkingEntry);
+
+void initParkingDatabase(int databaseCapacity) {
+    parkedCars = malloc(databaseCapacity * sizeof(ParkingEntry));
+    if (!parkedCars) {
+        printf("Błąd alokacji pamięci dla bazy parkingu\n");
+        exit(EXIT_FAILURE);
     }
-    return 0; // brak miejsc
+    parkedCarsCapacity = databaseCapacity;
 }
 
-int registerVehicleDeparture(LicencePlate licencePlate) {
-    for (int i = 0; i < parkedCarCount; i++) {
+bool changeParkingDatabaseCapacity(int newCapacity) {
+    if (newCapacity >= parkedCarsCount) {
+        ParkingEntry *tmp = realloc(parkedCars, newCapacity * sizeof(ParkingEntry));
+        if (!tmp) {
+            printf("Błąd alokacji pamięci dla bazy parkingu\n");
+            exit(EXIT_FAILURE);
+        }
+        parkedCars = tmp;
+        parkedCarsCapacity = newCapacity;
+        return true;
+    } else {
+        printf("Nowa pojemność bazy parkingu jest mniejsza niż aktualna liczba pojazdów na parkingu\n");
+        return false;
+    }
+}
+
+void freeParkingDatabase() {
+    free(parkedCars);
+    parkedCars = NULL;
+    parkedCarsCapacity = 0;
+    parkedCarsCount = 0;
+}
+
+/**
+ * Dodanie pojazdu do bazy zaparkowanych pojazdów
+ * @param parkingEntry - wskaźnik na strukturę pojazdu do dodania
+ * @return 1 jeśli dodano, 0 jeśli brak miejsc
+ */
+bool addParkingEntry(ParkingEntry *parkingEntry) {
+    if (parkedCarsCount < parkedCarsCapacity) {
+        // znalezienie miejsca wstawienia (alfabetycznie)
+        int pos = 0;
+        while (pos < parkedCarsCount
+               && strcmp(parkedCars[pos].licencePlate, parkingEntry->licencePlate) < 0) {
+            pos++;
+        }
+        // przesunięcie elementów w prawo
+        for (int j = parkedCarsCount; j > pos; j--) {
+            parkedCars[j] = parkedCars[j - 1];
+        }
+        // dodanie pojazdu do tablicy
+        parkedCars[pos] = *parkingEntry;
+        parkedCarsCount++;
+        // sukces
+        return true;
+    }
+    return false;
+}
+
+bool registerVehicleEntry(LicencePlate licencePlate) {
+    // informacje o wjeździe na parking
+    ParkingEntry parkingEntry;
+    strncpy(parkingEntry.licencePlate, licencePlate, sizeof(parkingEntry.licencePlate) - 1);
+    parkingEntry.entryTime = time(NULL);
+    // dodanie do bazy zaparkowanych pojazdów
+    if (addParkingEntry(&parkingEntry)) {
+        // zapisanie na dysku
+        saveParkingEntry(&parkingEntry);
+        // sukces
+        return true;
+    }
+    return false; // brak miejsc
+}
+
+ParkingEntry *findParkingEntry(LicencePlate licencePlate) {
+    for (int i = 0; i < parkedCarsCount; i++) {
+        if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
+            return &parkedCars[i];
+        }
+    }
+    return NULL; // brak wpisu
+}
+
+/**
+ * Zapisanie wjazdu pojazdu na parking do pliku
+ * @param parkingEntry - wskaźnik na strukturę wjazdu na parking
+ */
+void saveParkingEntry(ParkingEntry *parkingEntry) {
+    // ściezka do pliku
+    char fileName[256];
+    getParkingEntryFileName(fileName, sizeof fileName, parkingEntry->licencePlate);
+    // otwarcie pliku do zapisu
+    FILE *vehicleFile = fopen(fileName, "w");
+    // zapisanie danych do pliku
+    fprintf(vehicleFile, "%" PRIdMAX "\n", (intmax_t) parkingEntry->entryTime);
+    // zamknięcie pliku
+    fclose(vehicleFile);
+}
+
+int loadParkingEntries() {
+    // otwarcie katalogu z danymi postojów
+    DIR *dir = opendir(PARKING_DATA_DIR_NAME);
+    struct dirent *entry;
+    // wczytanie plików z danymi postojów
+    int loaded = 0;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") != 0
+            && strcmp(entry->d_name, "..") != 0) {
+            // pełna ścieżka pliku
+            LicencePlate licencePlate;
+            stringCopy(licencePlate, sizeof licencePlate, entry->d_name);
+            char parkingPath[256];
+            getParkingEntryFileName(parkingPath, sizeof parkingPath, licencePlate);
+
+            // otwarcie pliku z danymi postoju
+            FILE *parkingFile = fopen(parkingPath, "r");
+            if (!parkingFile) {
+                printf("Nie udało się otworzyć pliku z danymi postoju %s\n", parkingPath);
+                exit(EXIT_FAILURE);
+            }
+
+            // utworzenie struktury pojazdu
+            ParkingEntry parkingEntry;
+            strcpy(parkingEntry.licencePlate, licencePlate);
+
+            // wczytanie danych pojazdu z pliku
+            int checkInTime;
+            if (fscanf(parkingFile, "%d\n", &checkInTime) != 1) {
+                printf("Niepoprawne dane postoju w pliku %s\n", parkingPath);
+                exit(EXIT_FAILURE);
+            }
+            fclose(parkingFile);
+
+            parkingEntry.entryTime = (time_t) checkInTime;
+
+            // dodanie pojadu do bazy
+            if (addParkingEntry(&parkingEntry)) {
+                loaded++;
+            } else {
+                printf("Błąd odtworzenia bazy miejsc postojowych: nie można dodać pojazdu %s, brak miejsc na parkingu.\n", licencePlate);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    closedir(dir);
+    return loaded; // liczba wczytanych postojów
+}
+
+/**
+ * Pobranie nazwy pliku pojazdu na podstawie numeru rejestracyjnego
+ * @param fileName - bufor na nazwę pliku
+ * @param size - rozmiar bufora
+ * @param licencePlate - numer rejestracyjny pojazdu
+ */
+void getParkingEntryFileName(char *fileName, size_t size, LicencePlate licencePlate) {
+    snprintf(fileName, size, "%s%s", PARKING_DATA_DIR_NAME, licencePlate);
+}
+
+bool registerVehicleDeparture(LicencePlate licencePlate) {
+    for (int i = 0; i < parkedCarsCount; i++) {
         if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
             // przesunięcie kolejnych rekordów
-            for (int j = i; j < parkedCarCount; j++) {
+            for (int j = i; j < parkedCarsCount; j++) {
                 parkedCars[j] = parkedCars[j + 1];
             }
             // zmniejszenie liczby pojazdów na parkingu
-            parkedCarCount--;
+            parkedCarsCount--;
+            // usunięcie pliku z danymi postoju
+            char fileName[256];
+            getParkingEntryFileName(fileName, sizeof fileName, licencePlate);
+            if (remove(fileName) != 0) {
+                printf("Nie udało się usunąć pliku z danymi postoju %s\n", fileName);
+            }
             // sukces
-            return 1;
+            return true;
         }
     }
-    return 0; // pojazd nie znaleziony
+    return false; // pojazd nie znaleziony
+}
+
+bool checkParkingVehicle(LicencePlate licencePlate) {
+    for (int i = 0; i < parkedCarsCount; i++) {
+        if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
+            return true;
+        }
+    }
+    return false; // pojazd nie znaleziony
+}
+
+ParkingTime calculateParkingTime(ParkingEntry *parkingEntry) {
+    // struktura z czasem postoju
+    ParkingTime parkingTime;
+    // wyliczenie czasu postoju
+    const time_t currentTime = time(NULL);
+    const double parkedSeconds = difftime(currentTime, parkingEntry->entryTime);
+    const int parkedMinutes = (int) (parkedSeconds / 60);
+    parkingTime.hours = (int) (parkedMinutes / 60);
+    parkingTime.minutes = parkedMinutes % 60;
+    // wynik
+    return parkingTime;
 }
 
 ParkingStatistics getParkingStatistics() {
     ParkingStatistics parkingStatistics;
-    parkingStatistics.placesOccupied = parkedCarCount;
-    parkingStatistics.placesTotal = 100;
-    parkingStatistics.placesFree = 100 - parkedCarCount;
+    parkingStatistics.placesOccupied = parkedCarsCount;
+    parkingStatistics.placesTotal = getParkingCapacity();
+    parkingStatistics.placesFree = getParkingCapacity() - parkedCarsCount;
     return parkingStatistics;
+}
+
+int getParkingFreePlaces() {
+    return getParkingCapacity() - parkedCarsCount;
 }
 
 ParkingDatabase getParkingDatabase() {
     ParkingDatabase parkingDatabase;
     parkingDatabase.parkedCars = parkedCars;
-    parkingDatabase.parkedCarCount = parkedCarCount;
+    parkingDatabase.parkedCarCount = parkedCarsCount;
     return parkingDatabase;
 }
