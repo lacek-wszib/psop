@@ -2,6 +2,12 @@
 #include "vehicle_menu.h"
 #include "input_utils.h"
 #include "parking.h"
+#include "config.h"
+
+const char PROGRAM_NAME[] = "P.S.O.P - Przyjazny System Obsługi Parkingu";
+const char PROGRAM_VERSION[] = "0.1.0";
+const char PROGRAM_AUTHOR[] = "Aleksander Łacek";
+const char TITLE_SEPARATOR[] = "===========================================";
 
 // rejestracja wjazdu samochodu
 void handleParkingCheckIn();
@@ -17,6 +23,16 @@ int main(void) {
     char userInput[4];
     int mainMenuChoice = -1;
 
+    printf("%s\n%s\n%s\n", TITLE_SEPARATOR, PROGRAM_NAME, TITLE_SEPARATOR);
+    printf("Wersja: %s\nAutor: %s\n", PROGRAM_VERSION, PROGRAM_AUTHOR);
+    printf("%s\n", TITLE_SEPARATOR);
+
+    // inicjalizacja pamięci
+    printf("Inicjalizacja pamięci...");
+    initVehicleDatabase();
+    initParkingDatabase(getParkingCapacity());
+    printf("OK\n");
+
     // menu główne programu
     while (mainMenuChoice != 0) {
         printf("+=======================================+\n");
@@ -29,7 +45,7 @@ int main(void) {
         printf("| 2 => Rejestracja wyjazdu z parkingu   |\n");
         printf("| 3 => Lista pojazdów na parkingu       |\n");
         printf("| 4 => Statystyki obłożenia parkingu    |\n");
-        printf("| 5 => Baza samochodów                  |\n");
+        printf("| 5 => Baza pojazdów                    |\n");
         printf("| 0 => Wyjście z programu               |\n");
         printf("+=======================================+\n");
         printf(">> ");

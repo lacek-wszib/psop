@@ -25,6 +25,16 @@ typedef struct vehicleDatabase {
 } VehicleDatabase;
 
 /**
+ * Inicjalizacja bazy pojazdów
+ */
+void initVehicleDatabase();
+
+/**
+ * Zwolnienie pamięci zaalokowanej dla bazy pojazdów
+ */
+void freeVehicleDatabase();
+
+/**
  * Dodanie pojazdu do bazy
  * @param newVehicle - wskaźnik na strukturę pojazdu do dodania
  */

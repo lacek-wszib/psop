@@ -11,4 +11,6 @@ add_executable(psop main.c
         parking.h
         parking.c
         input_utils.h
-        input_utils.c)
+        input_utils.c
+        config.h
+        config.c)

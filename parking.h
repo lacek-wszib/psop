@@ -4,6 +4,24 @@
 #include "vehicle.h"
 
 /**
+ * Inicjalizacja bazy zajętych miejsc parkingowych
+ * @param databaseCapacity
+ */
+void initParkingDatabase(int databaseCapacity);
+
+/**
+ * Zmiana pojemności bazy zajętych miejsc parkingowych
+ * @param newCapacity - nowa pojemność bazy
+ * @return 1 jeśli zmieniono, 0 jeśli nie udało się zmienić
+ */
+int changeParkingDatabaseCapacity(int newCapacity);
+
+/**
+ * Zwolnienie pamięci zaalokowanej dla bazy zajętych miejsc parkingowych
+ */
+void freeParkingDatabase();
+
+/**
  * Informacje o pojaździe znajdującym się na parkingu
  */
 typedef struct parkingEntry {
