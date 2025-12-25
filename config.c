@@ -1,5 +1,9 @@
-const int PARKING_CAPACITY = 100;
+int parkingCapacity = 100;
 
 int getParkingCapacity() {
-    return PARKING_CAPACITY;
+    return parkingCapacity;
+}
+
+void setParkingCapacity(int newParkingCapacity) {
+    parkingCapacity = newParkingCapacity;
 }

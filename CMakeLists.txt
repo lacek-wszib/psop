@@ -15,4 +15,6 @@ add_executable(psop main.c
         config.h
         config.c
         main_menu.h
-        main_menu.c)
+        main_menu.c
+        config_menu.h
+        config_menu.c)

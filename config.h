@@ -7,4 +7,10 @@
  */
 int getParkingCapacity();
 
+/**
+ * Ustawienie ilości miejsc parkingowych
+ * @param newParkingCapacity - nowa ilość miejsc parkingowych
+ */
+void setParkingCapacity(int newParkingCapacity);
+
 #endif

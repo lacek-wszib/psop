@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "input_utils.h"
 #include "vehicle_menu.h"
+#include "config_menu.h"
 #include "parking.h"
 
 void handleParkingCheckIn();
@@ -26,6 +27,7 @@ void displayMainMenu() {
         printf("| 3 => Lista pojazdów na parkingu       |\n");
         printf("| 4 => Statystyki obłożenia parkingu    |\n");
         printf("| 5 => Baza pojazdów                    |\n");
+        printf("| 6 => Konfiguracja                     |\n");
         printf("| 0 => Wyjście z programu               |\n");
         printf("+=======================================+\n");
         printf(">> ");
@@ -53,6 +55,9 @@ void displayMainMenu() {
                 break;
             case 5:
                 displayVehicleManagmentMenu();
+                break;
+            case 6:
+                displayConfigMenu();
                 break;
         }
     }
