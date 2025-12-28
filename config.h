@@ -13,4 +13,16 @@ int getParkingCapacity();
  */
 void setParkingCapacity(int newParkingCapacity);
 
+/**
+ * Wczytanie konfiguracji
+ * @return 1 jeśli wczytano, 0 jeśli błąd
+ */
+int loadConfig();
+
+/**
+ * Zapisanie konfiguracji
+ * @return 1 jeśli zapisano, 0 jeśli błąd
+ */
+int saveConfig();
+
 #endif

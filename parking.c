@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "parking.h"
 #include "vehicle.h"
+#include "config.h"
 
 ParkingEntry *parkedCars = NULL;
 int parkedCarsCapacity = 0;
@@ -42,7 +43,7 @@ void freeParkingDatabase() {
 }
 
 int registerVehicleEntry(LicencePlate licencePlate) {
-    if (parkedCarsCount < 100) {
+    if (parkedCarsCount < getParkingCapacity()) {
         parkedCarsCount++;
         // informacje o pojeździe na parkingu
         ParkingEntry parkingEntry;
@@ -75,8 +76,8 @@ int registerVehicleDeparture(LicencePlate licencePlate) {
 ParkingStatistics getParkingStatistics() {
     ParkingStatistics parkingStatistics;
     parkingStatistics.placesOccupied = parkedCarsCount;
-    parkingStatistics.placesTotal = 100;
-    parkingStatistics.placesFree = 100 - parkedCarsCount;
+    parkingStatistics.placesTotal = getParkingCapacity();
+    parkingStatistics.placesFree = getParkingCapacity() - parkedCarsCount;
     return parkingStatistics;
 }
 

@@ -4,11 +4,14 @@
 #include "parking.h"
 
 void handleParkingSizeChange();
+void printConfig();
 
 
 void displayConfigMenu() {
+
     char userInput[3];
     int configMenuChoice = -1;
+    int configChanged = 0;
 
     while (configMenuChoice != 0) {
         printf("+=======================================+\n");
@@ -17,7 +20,8 @@ void displayConfigMenu() {
         printf("+=======================================+\n");
         printf("|             KONFIGURACJA              |\n");
         printf("+=======================================+\n");
-        printf("| 1 => Ilość miejsc parkingowych        |\n");
+        printf("| 1 => Wyświetl konfigurację            |\n");
+        printf("| 2 => Ustaw ilość miejsc parkingowych  |\n");
         printf("| 0 => Powrót do głównego menu          |\n");
         printf("+=======================================+\n");
         printf(">> ");
@@ -31,7 +35,16 @@ void displayConfigMenu() {
 
         switch (configMenuChoice) {
             case (1):
+                printConfig();
+                break;
+            case (2):
                 handleParkingSizeChange();
+                configChanged = 1;
+                break;
+            case (0):
+                if (configChanged && saveConfig()) {
+                    printf("Zapisano konfigurację\n");
+                }
                 break;
         }
     }
@@ -55,8 +68,13 @@ void handleParkingSizeChange() {
     } while (!inputStatus);
 
     // zmiana ilości miejsc parkingowych
-    if  (changeParkingDatabaseCapacity(newParkingSize)) {
+    if (changeParkingDatabaseCapacity(newParkingSize)) {
         printf("Zmieniono ilość miejsc parkingowych na %d\n", newParkingSize);
         setParkingCapacity(newParkingSize);
     }
+}
+
+void printConfig() {
+    // ilość miejsc parkingowych
+    printf("Ilość miejsc parkingowych: %d\n", getParkingCapacity());
 }
