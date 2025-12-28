@@ -37,7 +37,7 @@ void displayMainMenu() {
             || sscanf(userInput, "%d", &mainMenuChoice) != 1) {
             printf("Niepoprawna wartość, wybierz jedną z dostępnych opcji\n");
             continue;
-            }
+        }
 
         // obsługa wybranej opcji
         switch (mainMenuChoice) {
@@ -67,11 +67,16 @@ void displayMainMenu() {
  * Rejestracja wjazdu samochodu
  */
 void handleParkingCheckIn() {
-    char licencePlate[16];
+    LicencePlate licencePlate;
     printf("Podaj numer rejestracyjny >>");
-    if (!readLineFromInput(licencePlate, stdin)) {
-        printf("Nieprawidłowy numer rejestracyjny\n");
-    }
+    // wprowadzenie numeru rejestracyjnego
+    int inputStatus = 0;
+    do {
+        inputStatus = readLineFromInput(licencePlate, stdin);
+        if (!inputStatus) {
+            printf("Nieprawidłowy numer rejestracyjny\n");
+        }
+    } while (!inputStatus);
     // rejestacja wjazdu
     if (registerVehicleEntry(licencePlate)) {
         printf("Zarejestrowano wjazd pojazdu o numerze rejestracyjnym %s\n\n", licencePlate);
@@ -84,11 +89,16 @@ void handleParkingCheckIn() {
  * Rejestracja wyjazdu samochodu
  */
 void handleParkingCheckOut() {
-    char licencePlate[16];
+    LicencePlate licencePlate;
     printf("Podaj numer rejestracyjny >>");
-    if (!readLineFromInput(licencePlate, stdin)) {
-        printf("Nieprawidłowy numer rejestracyjny\n");
-    }
+    // wprowadzenie numeru rejestracyjnego
+    int inputStatus = 0;
+    do {
+        inputStatus = readLineFromInput(licencePlate, stdin);
+        if (!inputStatus) {
+            printf("Nieprawidłowy numer rejestracyjny\n");
+        }
+    } while (!inputStatus);
     // rejestacja wyjazdu
     if (registerVehicleDeparture(licencePlate)) {
         printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n\n", licencePlate);

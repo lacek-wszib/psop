@@ -45,14 +45,14 @@ void addVehicle(Vehicle *newVehicle);
  * @param licencePlate - numer rejestracyjny pojazdu do usunięcia
  * @return 1 jeśli usunięto, 0 jeśli nie znaleziono pojazdu
  */
-int removeVehicle(char *licencePlate);
+int removeVehicle(LicencePlate licencePlate);
 
 /**
  * Sprawdzenie czy pojazd znajduje się w bazie
  * @param licencePlate - numer rejestracyjny pojazdu do sprawdzenia
  * @return 1 jeśli pojazd jest w bazie, 0 jeśli nie
  */
-int checkVehicle(char *licencePlate);
+int checkVehicle(LicencePlate licencePlate);
 
 /**
  * Pobranie bazy pojazdów

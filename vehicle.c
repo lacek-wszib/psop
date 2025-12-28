@@ -54,7 +54,7 @@ void addVehicle(Vehicle *newVehicle) {
     printf("Dodano do bazy pojazd o numerze rejestracyjnym %s\n", newVehicle->licencePlate);
 }
 
-int removeVehicle(char *licencePlate) {
+int removeVehicle(LicencePlate licencePlate) {
     // wyszukanie pojazdu do usunięcia
     for (int i = 0; i < vehicleCount; i++) {
         if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
@@ -71,7 +71,7 @@ int removeVehicle(char *licencePlate) {
     return 0;
 }
 
-int checkVehicle(char *licencePlate) {
+int checkVehicle(LicencePlate licencePlate) {
     for (int i = 0; i < vehicleCount; i++) {
         if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
             return 1; // pojazd znaleziony

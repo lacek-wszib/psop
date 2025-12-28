@@ -107,7 +107,7 @@ void handleVehicleAdd() {
 }
 
 void handleVehicleRemove() {
-    char licencePlate[16];
+    LicencePlate licencePlate;
     int inputStatus = 0;
     // numer rejstracyjny
     do {
