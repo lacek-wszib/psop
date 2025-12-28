@@ -14,7 +14,7 @@ int vehicleCount = 0;
 void initVehicleDatabase() {
     vehicles = malloc(INITIAL_DATABASE_SIZE * sizeof(Vehicle));
     if (!vehicles) {
-        fprintf(stderr, "Błąd alokacji pamięci dla bazy pojazdów\n");
+        printf("Błąd alokacji pamięci dla bazy pojazdów\n");
         exit(EXIT_FAILURE);
     }
     vehicleCapacity = INITIAL_DATABASE_SIZE;
@@ -51,7 +51,7 @@ void addVehicle(Vehicle *newVehicle) {
     // dodanie pojazdu do bazy
     vehicleCount++;
     vehicles[vehicleCount - 1] = *newVehicle;
-    printf("Dodano do bazy pojazd o numerze rejestracyjnym %s\n", newVehicle->licencePlate);
+    printf("Dodano do bazy pojazd %s %s o numerze rejestracyjnym %s\n", newVehicle->brand, newVehicle->model, newVehicle->licencePlate);
 }
 
 int removeVehicle(LicencePlate licencePlate) {
@@ -78,6 +78,15 @@ int checkVehicle(LicencePlate licencePlate) {
         }
     }
     return 0; // pojazd nie znajduje się w bazie
+}
+
+Vehicle *findVehicle(LicencePlate licencePlate) {
+    for (int i = 0; i < vehicleCount; i++) {
+        if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
+            return &vehicles[i];
+        }
+    }
+    return NULL; // brak pojazdu
 }
 
 VehicleDatabase getVehicleDatabase() {

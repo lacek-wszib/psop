@@ -73,12 +73,25 @@ int registerVehicleDeparture(LicencePlate licencePlate) {
     return 0; // pojazd nie znaleziony
 }
 
+int checkParkingVehicle(LicencePlate licencePlate) {
+    for (int i = 0; i < parkedCarsCount; i++) {
+        if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
+            return 1;
+        }
+    }
+    return 0; // pojazd nie znaleziony
+}
+
 ParkingStatistics getParkingStatistics() {
     ParkingStatistics parkingStatistics;
     parkingStatistics.placesOccupied = parkedCarsCount;
     parkingStatistics.placesTotal = getParkingCapacity();
     parkingStatistics.placesFree = getParkingCapacity() - parkedCarsCount;
     return parkingStatistics;
+}
+
+int getParkingFreePlaces() {
+    return getParkingCapacity() - parkedCarsCount;
 }
 
 ParkingDatabase getParkingDatabase() {

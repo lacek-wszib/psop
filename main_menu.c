@@ -1,13 +1,17 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "input_utils.h"
 #include "vehicle_menu.h"
 #include "config_menu.h"
 #include "parking.h"
+#include "string_utils.h"
 
 void handleParkingCheckIn();
 void handleParkingCheckOut();
 void printVehicleList();
 void printStatistics();
+void handleAddVehicle(LicencePlate licencePlate);
 
 void displayMainMenu() {
     // wybór użytkownika
@@ -67,9 +71,15 @@ void displayMainMenu() {
  * Rejestracja wjazdu samochodu
  */
 void handleParkingCheckIn() {
+    // sprawdzenie dostęności miejsc
+    if (getParkingFreePlaces() == 0) {
+        printf("Brak wolnych miejsc na parkingu, nie można zarejestrować wjazdu\n");
+        return;
+    }
+
+    // wprowadzenie numeru rejestracyjnego
     LicencePlate licencePlate;
     printf("Podaj numer rejestracyjny >>");
-    // wprowadzenie numeru rejestracyjnego
     int inputStatus = 0;
     do {
         inputStatus = readLineFromInput(licencePlate, stdin);
@@ -77,11 +87,33 @@ void handleParkingCheckIn() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(licencePlate);
+
+    // sprawdzenie czy pojazdu nie ma na parkingu
+    if (checkParkingVehicle(licencePlate)) {
+        printf("Pojazd o numerze rejestracyjnym %s znajduje się już na parkingu\n", licencePlate);
+        return;
+    }
+
+    // sprawdzenie czy pojazd jest w bazie
+    if (!checkVehicle(licencePlate)) {
+        printf("Nie znaleziono pojazdu w bazie, czy go dodać? (t/n) >>");
+        char userInput[3];
+        if (readLineFromInput(userInput, stdin)
+              && (userInput[0] == 't' || userInput[0] == 'T')) {
+            handleAddVehicle(licencePlate);
+        } else {
+            printf("Anulowano rejestrację wjazdu\n");
+            return;
+        }
+    }
+
     // rejestacja wjazdu
     if (registerVehicleEntry(licencePlate)) {
-        printf("Zarejestrowano wjazd pojazdu o numerze rejestracyjnym %s\n\n", licencePlate);
+        Vehicle *vehicle = findVehicle(licencePlate);
+        printf("Zarejestrowano wjazd pojazdu %s %s o numerze rejestracyjnym %s\n", vehicle->brand, vehicle->model, licencePlate);
     } else {
-        printf("Nie można zarejestrować wjazdu, brak miejsc na parkingu\n\n");
+        printf("Nie można zarejestrować wjazdu, brak miejsc na parkingu\n");
     }
 }
 
@@ -89,9 +121,9 @@ void handleParkingCheckIn() {
  * Rejestracja wyjazdu samochodu
  */
 void handleParkingCheckOut() {
+    // wprowadzenie numeru rejestracyjnego
     LicencePlate licencePlate;
     printf("Podaj numer rejestracyjny >>");
-    // wprowadzenie numeru rejestracyjnego
     int inputStatus = 0;
     do {
         inputStatus = readLineFromInput(licencePlate, stdin);
@@ -99,11 +131,13 @@ void handleParkingCheckOut() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(licencePlate);
+
     // rejestacja wyjazdu
     if (registerVehicleDeparture(licencePlate)) {
-        printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n\n", licencePlate);
+        printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n", licencePlate);
     } else {
-        printf("Brak pojazdu o numerze rejestracyjnym %s na parkingu\n\n", licencePlate);
+        printf("Brak pojazdu o numerze rejestracyjnym %s na parkingu\n", licencePlate);
     }
 }
 
@@ -121,7 +155,8 @@ void printVehicleList() {
     printf("====================\nPojazdy na parkingu:\n====================\n");
     for (int i = 0; i < parkedCars.parkedCarCount; i++) {
         ParkingEntry *parkingEntry = &parkedCars.parkedCars[i];
-        printf("%s\n", parkingEntry->licencePlate);
+        Vehicle *vehicle = findVehicle(parkingEntry->licencePlate);
+        printf("%s %s %s\n", parkingEntry->licencePlate, vehicle->brand, vehicle->model);
     }
 }
 
@@ -133,4 +168,30 @@ void printStatistics() {
     printf("Ilość zajętych miejsc parkingowych: %d\n", parkingStatistics.placesOccupied);
     printf("Ilość wolnych miejsc parkingowych: %d\n", parkingStatistics.placesFree);
     printf("Ilość wszystkich miejsc parkingowych: %d\n", parkingStatistics.placesTotal);
+}
+
+void handleAddVehicle(LicencePlate licencePlate) {
+    Vehicle newVehicle;
+    strcpy(newVehicle.licencePlate, licencePlate);
+    int inputStatus = 0;
+
+    // marka pojazdu
+    do {
+        printf("Podaj marke pojazdu >>");
+        inputStatus = readLineFromInput(newVehicle.brand, stdin);
+        if (!inputStatus) {
+            printf("Nieprawidłowa marka pojadu\n");
+        }
+    } while (!inputStatus);
+    // model pojazdu
+    do {
+        printf("Podaj model pojazdu >>");
+        inputStatus = readLineFromInput(newVehicle.model, stdin);
+        if (!inputStatus) {
+            printf("Nieprawidłowy model pojadu\n");
+        }
+    } while (!inputStatus);
+
+    // dodanie pojazdu do bazy
+    addVehicle(&newVehicle);
 }

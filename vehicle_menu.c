@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "input_utils.h"
+#include "parking.h"
 #include "vehicle.h"
+#include "string_utils.h"
 
 void printAllVehicleList();
 void handleVehicleAdd();
@@ -8,7 +10,6 @@ void handleVehicleRemove();
 
 
 void displayVehicleManagmentMenu() {
-
     char userInput[3];
     int vehicleMenuChoice = -1;
 
@@ -19,7 +20,6 @@ void displayVehicleManagmentMenu() {
         printf("+=======================================+\n");
         printf("|             BAZA POJAZDÓW             |\n");
         printf("+=======================================+\n");
-        printf("| Dostępne opcje:                       |\n");
         printf("| 1 => Wyświetlenie listy pojazdów      |\n");
         printf("| 2 => Dodanie pojazdu do bazy          |\n");
         printf("| 3 => Usunięcie pojazdu z bazy         |\n");
@@ -59,8 +59,7 @@ void printAllVehicleList() {
     printf("===============\nLista pojazdów:\n===============\n");
     for (int i = 0; i < vehicleDatabase.vehicleCount; i++) {
         Vehicle *vehicle = &vehicleDatabase.vehicles[i];
-        printf("Nr rejestracyjny: %s\nMarka pojazdu: %s\nModel pojazdu: %s\nKolor pojazdu: %s\n===\n",
-               vehicle->licencePlate, vehicle->brand, vehicle->model, vehicle->colour);
+        printf("%s %s %s\n", vehicle->licencePlate, vehicle->brand, vehicle->model);
     }
 }
 
@@ -77,6 +76,7 @@ void handleVehicleAdd() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(newVehicle.licencePlate);
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");
@@ -91,14 +91,6 @@ void handleVehicleAdd() {
         inputStatus = readLineFromInput(newVehicle.model, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy model pojadu\n");
-        }
-    } while (!inputStatus);
-    // kolor pojazdu
-    do {
-        printf("Podaj kolor pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.colour, stdin);
-        if (!inputStatus) {
-            printf("Nieprawidłowy kolor pojadu\n");
         }
     } while (!inputStatus);
 
@@ -117,9 +109,15 @@ void handleVehicleRemove() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
+    toUpperCharArray(licencePlate);
 
+    // sprawdzenie czy pojazd jest na parkingu
+    if (checkParkingVehicle(licencePlate)) {
+        printf("Nie można usunąć z bazy pojazdu, który znajduje się na parkingu\n");
+        return;
+    }
     // usunięcie pojazdu z bazy
-    if (!removeVehicle(licencePlate)) {
+    if (removeVehicle(licencePlate)) {
         printf("Usunięto pojazdu o numerze rejestracyjnym %s\n", licencePlate);
     } else {
         printf("Nie znaleziono pojazdu o numerze rejestracyjnym %s\n", licencePlate);

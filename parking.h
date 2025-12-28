@@ -72,4 +72,17 @@ ParkingStatistics getParkingStatistics();
  */
 ParkingDatabase getParkingDatabase();
 
+/**
+ * Sprawdzenie czy pojazd znajduje się na parkingu
+ * @param licencePlate - numer rejestracyjny pojazdu
+ * @return 1 jeśli pojazd znajduje się na parkingu, 0 jeśli nie
+ */
+int checkParkingVehicle(LicencePlate licencePlate);
+
+/**
+ * Pobranie ilości wolnych miejsc parkingowych
+ * @return ilość wolnych miejsc parkingowych
+ */
+int getParkingFreePlaces();
+
 #endif

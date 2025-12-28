@@ -19,15 +19,15 @@ int main(void) {
     printf("%s\n", TITLE_SEPARATOR);
 
     printf("Wczytanie danych...\n");
-    // inicjalizacja pamięci
-    initVehicleDatabase();
-    initParkingDatabase(getParkingCapacity());
     // utworzenie katalogu na dane
     mkdir(DATA_DIR, DATA_DIR_MODE);
     // wczytanie danych
     if (loadConfig()) {
         printf("Wczytano konfigurację\n");
     }
+    // inicjalizacja pamięci
+    initVehicleDatabase();
+    initParkingDatabase(getParkingCapacity());
 
     // wyświetlenie menu głównego
     displayMainMenu();

@@ -13,7 +13,6 @@ typedef struct vehicle {
     LicencePlate licencePlate;  // nr rejestracyjny
     char brand[64];             // marka
     char model[64];             // model
-    char colour[64];            // kolor
 } Vehicle;
 
 /**
@@ -53,6 +52,13 @@ int removeVehicle(LicencePlate licencePlate);
  * @return 1 jeśli pojazd jest w bazie, 0 jeśli nie
  */
 int checkVehicle(LicencePlate licencePlate);
+
+/**
+ * Wyszukanie pojazdu w bazie
+ * @param licencePlate - numer rejestracyjny pojazdu do wyszukania
+ * @return wskaźnik na strukturę pojazdu jeśli znaleziono, NULL jeśli nie znaleziono
+ */
+Vehicle *findVehicle(LicencePlate licencePlate);
 
 /**
  * Pobranie bazy pojazdów
