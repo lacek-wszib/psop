@@ -7,4 +7,11 @@
  */
 void toUpperCharArray(char s[]);
 
+/**
+ * Kopiowanie ciągów znaków pomiędzy tablicami o różnych rozmiarach
+ * @param destination docelowy ciąg znaków
+ * @param source źródłowy ciąg znaków
+ */
+void stringCopy(char *destination, char *source);
+
 #endif

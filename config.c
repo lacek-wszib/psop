@@ -1,10 +1,18 @@
-#include "config.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include "config.h"
 
-// nazwa pliku z konfiguracją
-const char *CONFIG_FILE_NAME = "data/config";
+// katalog z konfiguracją
+const char *CONFIG_DIR_NAME = "config/";
+// konfiguracja pojemności parkingu
+const char *CAPACITY_CONFIG_FILE_PATH = "config/capacity";
+// katalog na dane
+const char *DATA_DIR_NAME = "data";
+// katalog z danymi pojazdów
+const char *VEHICLES_DATA_DIR_NAME = "data/vehicles/";
+// uprawnienia do tworzonych katalogów
+const mode_t DATA_DIR_MODE = 0755;
 
 int parkingCapacity = 0;
 
@@ -19,7 +27,7 @@ void setParkingCapacity(int newParkingCapacity) {
 int loadConfig() {
     FILE *configFile;
     // otwarcie pliku do odczytu
-    configFile = fopen(CONFIG_FILE_NAME, "r");
+    configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "r");
     if (configFile == NULL) {
         printf("Nie można otworzyć pliku konfiguracyjnego\n");
         return 0;
@@ -41,10 +49,19 @@ int loadConfig() {
 int saveConfig() {
     FILE *configFile;
     // otwarcie pliku do zapisu
-    configFile = fopen(CONFIG_FILE_NAME, "w");
+    configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "w");
     // zapisanie tekstu do pliku
     fprintf(configFile, "%d", parkingCapacity);
     // zamknięcie pliku
     fclose(configFile);
     return 1;
+}
+
+void createDirectories() {
+    // utworzenie katalogu na konfigurację
+    mkdir(CONFIG_DIR_NAME, DATA_DIR_MODE);
+    // utworzenie katalogu na dane
+    mkdir(DATA_DIR_NAME, DATA_DIR_MODE);
+    // utworzenie katalogu na dane pojazdów
+    mkdir(VEHICLES_DATA_DIR_NAME, DATA_DIR_MODE);
 }

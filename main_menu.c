@@ -193,5 +193,5 @@ void handleAddVehicle(LicencePlate licencePlate) {
     } while (!inputStatus);
 
     // dodanie pojazdu do bazy
-    addVehicle(&newVehicle);
+    addVehicleAndSave(&newVehicle);
 }

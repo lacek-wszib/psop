@@ -95,7 +95,7 @@ void handleVehicleAdd() {
     } while (!inputStatus);
 
     // dodanie pojazdu do bazy
-    addVehicle(&newVehicle);
+    addVehicleAndSave(&newVehicle);
 }
 
 void handleVehicleRemove() {

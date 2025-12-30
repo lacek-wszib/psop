@@ -1,18 +1,21 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
+#include <stdbool.h>
 
 /**
- * Typ definiujący numer rejestracyjny pojazdu
+ * Typy definiujące dane pojazdu
  */
 typedef char LicencePlate[16];
+typedef char Brand[64];
+typedef char Model[64];
 
 /**
  * Struktura reprezentująca pojazd
  */
 typedef struct vehicle {
     LicencePlate licencePlate;  // nr rejestracyjny
-    char brand[64];             // marka
-    char model[64];             // model
+    Brand brand;                // marka
+    Model model;                // model
 } Vehicle;
 
 /**
@@ -40,6 +43,12 @@ void freeVehicleDatabase();
 void addVehicle(Vehicle *newVehicle);
 
 /**
+ * Dodanie pojazdu do bazy i zapisanie go do pliku
+ * @param newVehicle - wskaźnik na strukturę pojazdu do dodania
+ */
+void addVehicleAndSave(Vehicle *newVehicle);
+
+/**
  * Usunięcie pojazdu z bazy
  * @param licencePlate - numer rejestracyjny pojazdu do usunięcia
  * @return 1 jeśli usunięto, 0 jeśli nie znaleziono pojazdu
@@ -65,5 +74,11 @@ Vehicle *findVehicle(LicencePlate licencePlate);
  * @return struktura zawierająca dane bazy pojazdów
  */
 VehicleDatabase getVehicleDatabase();
+
+/**
+ * Wczytanie pojazdów z katalogu danych
+ * @return liczba wczytanych pojazdów
+ */
+int loadVehicles();
 
 #endif
