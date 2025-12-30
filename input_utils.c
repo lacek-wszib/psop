@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
-int readLineFromInput(char *buffor, FILE *stream) {
+int readLineFromInput(char *buffor, size_t bufsize, FILE *stream) {
+    // walidacja parametrów wejściowych
+    if (buffor == NULL || bufsize == 0 || stream == NULL) return 0;
     // wczytanie danych do bufora
-    if (fgets(buffor, sizeof buffor, stdin)) {
+    if (fgets(buffor, bufsize, stream)) {
         if (strchr(buffor, '\n') == NULL) {
             // dane nie zmieściły się w buforze
             int c;

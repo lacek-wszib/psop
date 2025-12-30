@@ -27,7 +27,7 @@ void displayConfigMenu() {
         printf(">> ");
 
         // wczytanie opcji z klawiatury
-        if (!readLineFromInput(userInput, stdin)
+        if (!readLineFromInput(userInput, sizeof userInput, stdin)
             || sscanf(userInput, "%d", &configMenuChoice) != 1) {
             printf("Niepoprawna wartość, wybierz jedną z dostępnych opcji\n");
             continue;
@@ -59,7 +59,7 @@ void handleParkingSizeChange() {
     int newParkingSize = 0;
     do {
         printf("Podaj nową ilość miejsc parkingowych >>");
-        if (readLineFromInput(userInput, stdin)
+        if (readLineFromInput(userInput, sizeof userInput, stdin)
             && sscanf(userInput, "%d", &newParkingSize)) {
             inputStatus = 1;
         } else {

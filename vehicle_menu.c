@@ -28,7 +28,7 @@ void displayVehicleManagmentMenu() {
         printf(">> ");
 
         // wczytanie opcji z klawiatury
-        if (!readLineFromInput(userInput, stdin)
+        if (!readLineFromInput(userInput, sizeof userInput, stdin)
             || sscanf(userInput, "%d", &vehicleMenuChoice) != 1) {
             printf("Niepoprawna wartość, wybierz jedną z dostępnych opcji\n");
             continue;
@@ -71,7 +71,7 @@ void handleVehicleAdd() {
     // numer rejstracyjny
     do {
         printf("Podaj numer rejestracyjny >>");
-        inputStatus = readLineFromInput(newVehicle.licencePlate, stdin);
+        inputStatus = readLineFromInput(newVehicle.licencePlate, sizeof newVehicle.licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
@@ -80,7 +80,7 @@ void handleVehicleAdd() {
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.brand, stdin);
+        inputStatus = readLineFromInput(newVehicle.brand, sizeof newVehicle.brand, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowa marka pojadu\n");
         }
@@ -88,7 +88,7 @@ void handleVehicleAdd() {
     // model pojazdu
     do {
         printf("Podaj model pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.model, stdin);
+        inputStatus = readLineFromInput(newVehicle.model, sizeof newVehicle.model, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy model pojadu\n");
         }
@@ -104,7 +104,7 @@ void handleVehicleRemove() {
     // numer rejstracyjny
     do {
         printf("Podaj numer rejestracyjny pojazdu do usunięcia>>");
-        inputStatus = readLineFromInput(licencePlate, stdin);
+        inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }

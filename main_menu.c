@@ -37,7 +37,7 @@ void displayMainMenu() {
         printf(">> ");
 
         // wczytanie opcji z klawiatury
-        if (!readLineFromInput(userInput, stdin)
+        if (!readLineFromInput(userInput, sizeof userInput, stdin)
             || sscanf(userInput, "%d", &mainMenuChoice) != 1) {
             printf("Niepoprawna wartość, wybierz jedną z dostępnych opcji\n");
             continue;
@@ -82,7 +82,7 @@ void handleParkingCheckIn() {
     printf("Podaj numer rejestracyjny >>");
     int inputStatus = 0;
     do {
-        inputStatus = readLineFromInput(licencePlate, stdin);
+        inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
@@ -99,7 +99,7 @@ void handleParkingCheckIn() {
     if (!checkVehicle(licencePlate)) {
         printf("Nie znaleziono pojazdu w bazie, czy go dodać? (t/n) >>");
         char userInput[3];
-        if (readLineFromInput(userInput, stdin)
+        if (readLineFromInput(userInput, sizeof userInput, stdin)
               && (userInput[0] == 't' || userInput[0] == 'T')) {
             handleAddVehicle(licencePlate);
         } else {
@@ -126,7 +126,7 @@ void handleParkingCheckOut() {
     printf("Podaj numer rejestracyjny >>");
     int inputStatus = 0;
     do {
-        inputStatus = readLineFromInput(licencePlate, stdin);
+        inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
@@ -178,7 +178,7 @@ void handleAddVehicle(LicencePlate licencePlate) {
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.brand, stdin);
+        inputStatus = readLineFromInput(newVehicle.brand, sizeof newVehicle.brand, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowa marka pojadu\n");
         }
@@ -186,7 +186,7 @@ void handleAddVehicle(LicencePlate licencePlate) {
     // model pojazdu
     do {
         printf("Podaj model pojazdu >>");
-        inputStatus = readLineFromInput(newVehicle.model, stdin);
+        inputStatus = readLineFromInput(newVehicle.model, sizeof newVehicle.model, stdin);
         if (!inputStatus) {
             printf("Nieprawidłowy model pojadu\n");
         }
