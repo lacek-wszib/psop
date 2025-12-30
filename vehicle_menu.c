@@ -77,6 +77,13 @@ void handleVehicleAdd() {
         }
     } while (!inputStatus);
     toUpperCharArray(newVehicle.licencePlate);
+
+    // sprawdzenie czy pojazd już jest w bazie
+    if (checkVehicle(newVehicle.licencePlate)) {
+        printf("Pojazd o numerze rejestracyjnym %s już znajduje się w bazie\n", newVehicle.licencePlate);
+        return;
+    }
+
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");

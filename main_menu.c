@@ -171,6 +171,13 @@ void printStatistics() {
 }
 
 void handleAddVehicle(LicencePlate licencePlate) {
+
+    // sprawdzenie czy pojazd już jest w bazie
+    if (checkVehicle(licencePlate)) {
+        printf("Pojazd o numerze rejestracyjnym %s już znajduje się w bazie\n", licencePlate);
+        return;
+    }
+
     Vehicle newVehicle;
     strcpy(newVehicle.licencePlate, licencePlate);
     int inputStatus = 0;
