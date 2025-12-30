@@ -120,7 +120,7 @@ int loadVehicles() {
 
             // utworzenie struktury pojazdu
             Vehicle vehicle;
-            stringCopy(vehicle.licencePlate, entry->d_name);
+            stringCopy(vehicle.licencePlate, sizeof vehicle.licencePlate, entry->d_name);
 
             // wczytanie danych pojazdu z pliku
             if (fscanf(vehicleFile, "%s\n%s", vehicle.brand, vehicle.model) != 2) {

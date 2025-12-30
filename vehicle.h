@@ -1,6 +1,5 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
-#include <stdbool.h>
 
 /**
  * Typy definiujące dane pojazdu

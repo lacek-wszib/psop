@@ -76,7 +76,7 @@ void handleVehicleAdd() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
-    toUpperCharArray(newVehicle.licencePlate);
+    toUpperCharArray(newVehicle.licencePlate, sizeof newVehicle.licencePlate);
 
     // sprawdzenie czy pojazd już jest w bazie
     if (checkVehicle(newVehicle.licencePlate)) {
@@ -116,7 +116,7 @@ void handleVehicleRemove() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
-    toUpperCharArray(licencePlate);
+    toUpperCharArray(licencePlate, sizeof licencePlate);
 
     // sprawdzenie czy pojazd jest na parkingu
     if (checkParkingVehicle(licencePlate)) {

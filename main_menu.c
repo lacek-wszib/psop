@@ -87,7 +87,7 @@ void handleParkingCheckIn() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
-    toUpperCharArray(licencePlate);
+    toUpperCharArray(licencePlate, sizeof licencePlate);
 
     // sprawdzenie czy pojazdu nie ma na parkingu
     if (checkParkingVehicle(licencePlate)) {
@@ -131,7 +131,7 @@ void handleParkingCheckOut() {
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
-    toUpperCharArray(licencePlate);
+    toUpperCharArray(licencePlate, sizeof licencePlate);
 
     // rejestacja wyjazdu
     if (registerVehicleDeparture(licencePlate)) {
