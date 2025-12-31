@@ -2,6 +2,7 @@
 #define PARKING_H
 #include <time.h>
 #include "vehicle.h"
+#include <stdbool.h>
 
 /**
  * Inicjalizacja bazy zajętych miejsc parkingowych
@@ -12,9 +13,9 @@ void initParkingDatabase(int databaseCapacity);
 /**
  * Zmiana pojemności bazy zajętych miejsc parkingowych
  * @param newCapacity - nowa pojemność bazy
- * @return 1 jeśli zmieniono, 0 jeśli nie udało się zmienić
+ * @return true jeśli zmieniono, false jeśli nowa pojemność jest mniejsza niż aktualna liczba pojazdów na parkingu
  */
-int changeParkingDatabaseCapacity(int newCapacity);
+bool changeParkingDatabaseCapacity(int newCapacity);
 
 /**
  * Zwolnienie pamięci zaalokowanej dla bazy zajętych miejsc parkingowych
@@ -57,16 +58,16 @@ typedef struct parkingTime {
 /**
  * Rejestracja wjazdu pojazdu na parking
  * @param licencePlate - numer rejestracyjny pojazdu
- * @return 1 jeśli zarejestrowano wjazd, 0 jeśli brak miejsc
+ * @return true jeśli zarejestrowano wjazd, false jeśli brak miejsc
  */
-int registerVehicleEntry(LicencePlate licencePlate);
+bool registerVehicleEntry(LicencePlate licencePlate);
 
 /**
  * Rejestracja wyjazdu pojazdu z parkingu
  * @param licencePlate - numer rejestracyjny pojazdu
- * @return 1 jeśli zarejestrowano wyjazd, 0 jeśli pojazdu nie znaleziono
+ * @return true jeśli zarejestrowano wyjazd, false jeśli pojazd nie był na parkingu
  */
-int registerVehicleDeparture(LicencePlate licencePlate);
+bool registerVehicleDeparture(LicencePlate licencePlate);
 
 /**
  * Wyszukanie wpisu parkingowego na podstawie numeru rejestracyjnego pojazdu
@@ -90,9 +91,9 @@ ParkingDatabase getParkingDatabase();
 /**
  * Sprawdzenie czy pojazd znajduje się na parkingu
  * @param licencePlate - numer rejestracyjny pojazdu
- * @return 1 jeśli pojazd znajduje się na parkingu, 0 jeśli nie
+ * @return true jeśli pojazd jest na parkingu, false jeśli nie
  */
-int checkParkingVehicle(LicencePlate licencePlate);
+bool checkParkingVehicle(LicencePlate licencePlate);
 
 /**
  * Pobranie ilości wolnych miejsc parkingowych

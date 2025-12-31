@@ -145,7 +145,7 @@ int loadVehicles() {
     return loaded; // liczba wczytanych pojazdów
 }
 
-int removeVehicle(LicencePlate licencePlate) {
+bool removeVehicle(LicencePlate licencePlate) {
     // wyszukanie pojazdu do usunięcia
     for (int i = 0; i < vehicleCount; i++) {
         if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
@@ -162,19 +162,19 @@ int removeVehicle(LicencePlate licencePlate) {
                 printf("Nie udało się usunąć pliku z danymi pojazdu %s\n", fileName);
             }
             // zwrócenie sukcesu
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
-int checkVehicle(LicencePlate licencePlate) {
+bool checkVehicle(LicencePlate licencePlate) {
     for (int i = 0; i < vehicleCount; i++) {
         if (strcmp(vehicles[i].licencePlate, licencePlate) == 0) {
-            return 1; // pojazd znaleziony
+            return true; // pojazd znaleziony
         }
     }
-    return 0; // pojazd nie znajduje się w bazie
+    return false; // pojazd nie znajduje się w bazie
 }
 
 Vehicle *findVehicle(LicencePlate licencePlate) {

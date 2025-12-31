@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
-int readLineFromInput(char *buffor, size_t bufsize, FILE *stream) {
+bool readLineFromInput(char *buffor, size_t bufsize, FILE *stream) {
     // walidacja parametrów wejściowych
-    if (buffor == NULL || bufsize == 0 || stream == NULL) return 0;
+    if (buffor == NULL || bufsize == 0 || stream == NULL) return false;
     // wczytanie danych do bufora
     if (fgets(buffor, bufsize, stream)) {
         if (strchr(buffor, '\n') == NULL) {
@@ -14,7 +15,7 @@ int readLineFromInput(char *buffor, size_t bufsize, FILE *stream) {
             // usunięcie znaku nowej linii
             buffor[strcspn(buffor, "\n")] = '\0';
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }

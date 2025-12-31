@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "parking.h"
 #include "vehicle.h"
 #include "config.h"
@@ -25,7 +26,7 @@ void initParkingDatabase(int databaseCapacity) {
     parkedCarsCapacity = databaseCapacity;
 }
 
-int changeParkingDatabaseCapacity(int newCapacity) {
+bool changeParkingDatabaseCapacity(int newCapacity) {
     if (newCapacity >= parkedCarsCount) {
         ParkingEntry *tmp = realloc(parkedCars, newCapacity * sizeof(ParkingEntry));
         if (!tmp) {
@@ -34,10 +35,10 @@ int changeParkingDatabaseCapacity(int newCapacity) {
         }
         parkedCars = tmp;
         parkedCarsCapacity = newCapacity;
-        return 1;
+        return true;
     } else {
         printf("Nowa pojemność bazy parkingu jest mniejsza niż aktualna liczba pojazdów na parkingu\n");
-        return 0;
+        return false;
     }
 }
 
@@ -53,7 +54,7 @@ void freeParkingDatabase() {
  * @param parkingEntry - wskaźnik na strukturę pojazdu do dodania
  * @return 1 jeśli dodano, 0 jeśli brak miejsc
  */
-int addParkingEntry(ParkingEntry *parkingEntry) {
+bool addParkingEntry(ParkingEntry *parkingEntry) {
     if (parkedCarsCount < parkedCarsCapacity) {
         // znalezienie miejsca wstawienia (alfabetycznie)
         int pos = 0;
@@ -69,12 +70,12 @@ int addParkingEntry(ParkingEntry *parkingEntry) {
         parkedCars[pos] = *parkingEntry;
         parkedCarsCount++;
         // sukces
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-int registerVehicleEntry(LicencePlate licencePlate) {
+bool registerVehicleEntry(LicencePlate licencePlate) {
     // informacje o wjeździe na parking
     ParkingEntry parkingEntry;
     strncpy(parkingEntry.licencePlate, licencePlate, sizeof(parkingEntry.licencePlate) - 1);
@@ -84,9 +85,9 @@ int registerVehicleEntry(LicencePlate licencePlate) {
         // zapisanie na dysku
         saveParkingEntry(&parkingEntry);
         // sukces
-        return 1;
+        return true;
     }
-    return 0; // brak miejsc
+    return false; // brak miejsc
 }
 
 ParkingEntry *findParkingEntry(LicencePlate licencePlate) {
@@ -174,7 +175,7 @@ void getParkingEntryFileName(char *fileName, size_t size, LicencePlate licencePl
     snprintf(fileName, size, "%s%s", PARKING_DATA_DIR_NAME, licencePlate);
 }
 
-int registerVehicleDeparture(LicencePlate licencePlate) {
+bool registerVehicleDeparture(LicencePlate licencePlate) {
     for (int i = 0; i < parkedCarsCount; i++) {
         if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
             // przesunięcie kolejnych rekordów
@@ -190,19 +191,19 @@ int registerVehicleDeparture(LicencePlate licencePlate) {
                 printf("Nie udało się usunąć pliku z danymi postoju %s\n", fileName);
             }
             // sukces
-            return 1;
+            return true;
         }
     }
-    return 0; // pojazd nie znaleziony
+    return false; // pojazd nie znaleziony
 }
 
-int checkParkingVehicle(LicencePlate licencePlate) {
+bool checkParkingVehicle(LicencePlate licencePlate) {
     for (int i = 0; i < parkedCarsCount; i++) {
         if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
-            return 1;
+            return true;
         }
     }
-    return 0; // pojazd nie znaleziony
+    return false; // pojazd nie znaleziony
 }
 
 ParkingTime calculateParkingTime(ParkingEntry *parkingEntry) {

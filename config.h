@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include <sys/stat.h>
+#include <stdbool.h>
 
 extern const char *VEHICLES_DATA_DIR_NAME;
 extern const char *PARKING_DATA_DIR_NAME;
@@ -20,15 +21,15 @@ void setParkingCapacity(int newParkingCapacity);
 
 /**
  * Wczytanie konfiguracji
- * @return 1 jeśli wczytano, 0 jeśli błąd
+ * @return true jeśli wczytano, false jeśli wystąpił błąd
  */
-int loadConfig();
+bool loadConfig();
 
 /**
  * Zapisanie konfiguracji
- * @return 1 jeśli zapisano, 0 jeśli błąd
+ * @return true jeśli zapisano, false jeśli wystąpił błąd
  */
-int saveConfig();
+bool saveConfig();
 
 /**
  * Utworzenie katalogów potrzebnych do działania programu

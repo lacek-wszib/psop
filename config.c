@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 #include "config.h"
 
 // katalog z konfiguracją
@@ -26,12 +27,12 @@ void setParkingCapacity(int newParkingCapacity) {
     parkingCapacity = newParkingCapacity;
 }
 
-int loadConfig() {
+bool loadConfig() {
     // otwarcie pliku do odczytu
     FILE *configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "r");
     if (configFile == NULL) {
         printf("Nie można otworzyć pliku konfiguracyjnego\n");
-        return 0;
+        return false;
     }
     // odczyt zawartości
     char configData[10];
@@ -40,21 +41,21 @@ int loadConfig() {
         printf("Błędny plik konfiguracyjny\n");
         // zamknięcie pliku
         fclose(configFile);
-        return 0;
+        return false;
     }
     // zamknięcie pliku
     fclose(configFile);
-    return 1;
+    return true;
 }
 
-int saveConfig() {
+bool saveConfig() {
     // otwarcie pliku do zapisu
     FILE *configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "w");
     // zapisanie tekstu do pliku
     fprintf(configFile, "%d", parkingCapacity);
     // zamknięcie pliku
     fclose(configFile);
-    return 1;
+    return true;
 }
 
 void createDirectories() {

@@ -1,5 +1,6 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
+#include <stdbool.h>
 
 /**
  * Typy definiujące dane pojazdu
@@ -50,16 +51,16 @@ void addVehicleAndSave(Vehicle *newVehicle);
 /**
  * Usunięcie pojazdu z bazy
  * @param licencePlate - numer rejestracyjny pojazdu do usunięcia
- * @return 1 jeśli usunięto, 0 jeśli nie znaleziono pojazdu
+ * @return true jeśli usunięto, false jeśli pojazd nie został znaleziony
  */
-int removeVehicle(LicencePlate licencePlate);
+bool removeVehicle(LicencePlate licencePlate);
 
 /**
  * Sprawdzenie czy pojazd znajduje się w bazie
  * @param licencePlate - numer rejestracyjny pojazdu do sprawdzenia
- * @return 1 jeśli pojazd jest w bazie, 0 jeśli nie
+ * @return true jeśli pojazd znajduje się w bazie, false jeśli nie
  */
-int checkVehicle(LicencePlate licencePlate);
+bool checkVehicle(LicencePlate licencePlate);
 
 /**
  * Wyszukanie pojazdu w bazie
