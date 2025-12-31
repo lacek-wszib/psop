@@ -11,6 +11,8 @@ const char *CAPACITY_CONFIG_FILE_PATH = "config/capacity";
 const char *DATA_DIR_NAME = "data";
 // katalog z danymi pojazdów
 const char *VEHICLES_DATA_DIR_NAME = "data/vehicles/";
+// katalog z danymi postojów
+const char *PARKING_DATA_DIR_NAME = "data/parking/";
 // uprawnienia do tworzonych katalogów
 const mode_t DATA_DIR_MODE = 0755;
 
@@ -64,4 +66,6 @@ void createDirectories() {
     mkdir(DATA_DIR_NAME, DATA_DIR_MODE);
     // utworzenie katalogu na dane pojazdów
     mkdir(VEHICLES_DATA_DIR_NAME, DATA_DIR_MODE);
+    // utworzenie katalogu na dane postojów
+    mkdir(PARKING_DATA_DIR_NAME, DATA_DIR_MODE);
 }

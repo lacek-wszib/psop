@@ -85,4 +85,10 @@ int checkParkingVehicle(LicencePlate licencePlate);
  */
 int getParkingFreePlaces();
 
+/**
+ * Wczytanie pojazdów z plików do bazy pojazdów
+ * @return liczba wczytanych pojazdów
+ */
+int loadParkingEntries();
+
 #endif

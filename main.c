@@ -5,7 +5,7 @@
 #include "config.h"
 
 const char PROGRAM_NAME[] = "P.S.O.P - Przyjazny System Obsługi Parkingu";
-const char PROGRAM_VERSION[] = "0.3.0";
+const char PROGRAM_VERSION[] = "0.4.0";
 const char PROGRAM_AUTHOR[] = "Aleksander Łacek";
 const char TITLE_SEPARATOR[] = "===========================================";
 
@@ -25,7 +25,9 @@ int main(void) {
     // wczytanie danych
     printf("Wczytanie danych...\n");
     int vehiclesCount = loadVehicles();
-    printf("Wczytano %d pojazdów do bazy\n", vehiclesCount);
+    printf("Wczytano %d pojazdów\n", vehiclesCount);
+    int parkingEntryCount = loadParkingEntries();
+    printf("Wczytano %d postojów\n", parkingEntryCount);
 
     // wyświetlenie menu głównego
     displayMainMenu();

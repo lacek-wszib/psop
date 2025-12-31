@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 
 extern const char *VEHICLES_DATA_DIR_NAME;
+extern const char *PARKING_DATA_DIR_NAME;
 extern const mode_t DATA_DIR_MODE;
 
 /**
