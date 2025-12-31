@@ -10,7 +10,7 @@
 // początkowy rozmiar bazy pojazdów
 const int INITIAL_DATABASE_SIZE = 2;
 
-char *getVehicleFileName(LicencePlate licencePlate);
+void getVehicleFileName(char *fileName, size_t size, LicencePlate licencePlate);
 void saveVehicle(Vehicle *vehicle);
 
 // baza pojazdów
@@ -84,25 +84,23 @@ void addVehicleAndSave(Vehicle *newVehicle) {
 void saveVehicle(Vehicle *vehicle) {
     FILE *vehicleFile;
     // otwarcie pliku do zapisu
-    char *fileName = getVehicleFileName(vehicle->licencePlate);
+    char fileName[256];
+    getVehicleFileName(fileName, sizeof fileName, vehicle->licencePlate);
     vehicleFile = fopen(fileName, "w");
     // zapisanie tekstu do pliku
     fprintf(vehicleFile, "%s\n%s", vehicle->brand, vehicle->model);
     // zamknięcie pliku
     fclose(vehicleFile);
-    free(fileName);
 }
 
 /**
  * Pobranie nazwy pliku pojazdu na podstawie numeru rejestracyjnego
+ * @param fileName - bufor na nazwę pliku
+ * @param size - rozmiar bufora
  * @param licencePlate - numer rejestracyjny pojazdu
- * @return ścieżka do pliku z danymi pojazdu (należy zwolnić pamięć po użyciu)
  */
-char *getVehicleFileName(LicencePlate licencePlate) {
-    size_t len = strlen(VEHICLES_DATA_DIR_NAME) + strlen(licencePlate) + 1;
-    char *fileName = malloc(len);
-    snprintf(fileName, len, "%s%s", VEHICLES_DATA_DIR_NAME, licencePlate);
-    return fileName;
+void getVehicleFileName(char *fileName, size_t size, LicencePlate licencePlate) {
+    snprintf(fileName, size, "%s%s", VEHICLES_DATA_DIR_NAME, licencePlate);
 }
 
 int loadVehicles() {
@@ -115,15 +113,15 @@ int loadVehicles() {
         if (strcmp(entry->d_name, ".") != 0
             && strcmp(entry->d_name, "..") != 0) {
             // pełna ścieżka pliku
-            size_t vehiclePathLen = strlen(VEHICLES_DATA_DIR_NAME) + strlen(entry->d_name) + 1;
-            char *vehiclePath = malloc(vehiclePathLen);
-            snprintf(vehiclePath, vehiclePathLen, "%s%s", VEHICLES_DATA_DIR_NAME, entry->d_name);
+            LicencePlate licencePlate;
+            stringCopy(licencePlate, sizeof licencePlate, entry->d_name);
+            char vehiclePath[256];
+            getVehicleFileName(vehiclePath, sizeof vehiclePath, licencePlate);
 
             // otwarcie pliku z danymi pojazdu
             FILE *vehicleFile = fopen(vehiclePath, "r");
             if (!vehicleFile) {
                 printf("Nie udało się otworzyć pliku z danymi pojazdu %s\n", vehiclePath);
-                free(vehiclePath);
                 exit(EXIT_FAILURE);
             }
 
@@ -134,10 +132,8 @@ int loadVehicles() {
             // wczytanie danych pojazdu z pliku
             if (fscanf(vehicleFile, "%s\n%s", vehicle.brand, vehicle.model) != 2) {
                 printf("Niepoprawne dane pojazdu w pliku %s\n", vehiclePath);
-                free(vehiclePath);
                 exit(EXIT_FAILURE);
             }
-            free(vehiclePath);
             fclose(vehicleFile);
 
             // dodanie pojadu do bazy
@@ -160,6 +156,12 @@ int removeVehicle(LicencePlate licencePlate) {
             }
             // zmniejszenie liczby pojazdów w bazie
             vehicleCount--;
+            // usunięcie pliku z danymi pojazdu
+            char fileName[256];
+            getVehicleFileName(fileName, sizeof fileName, licencePlate);
+            if (remove(fileName) != 0) {
+                printf("Nie udało się usunąć pliku z danymi pojazdu %s\n", fileName);
+            }
             // zwrócenie sukcesu
             return 1;
         }

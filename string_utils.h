@@ -8,7 +8,7 @@
 void toUpperCharArray(char string[], size_t size);
 
 /**
- * Kopiowanie ciągów znaków pomiędzy tablicami o różnych rozmiarach
+ * Bezpieczne kopiowanie ciągów znaków pomiędzy tablicami o różnych rozmiarach
  * @param destination docelowy ciąg znaków
  * @param source źródłowy ciąg znaków
  */
