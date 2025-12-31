@@ -138,6 +138,8 @@ void handleParkingCheckOut() {
     if (parkingEntry != NULL) {
         // wyliczenie czasu postoju
         const ParkingTime parkingTime = calculateParkingTime(parkingEntry);
+        // rejestacja wyjazdu
+        registerVehicleDeparture(licencePlate);
         // komunikat dla użytkownika
         printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n", licencePlate);
         printf("Czas postoju pojazdu wyniósł: %d:%02d\n", parkingTime.hours, parkingTime.minutes);
