@@ -99,8 +99,8 @@ ParkingEntry *findParkingEntry(LicencePlate licencePlate) {
 }
 
 /**
- * Zapisanie pojazdu do pliku
- * @param vehicle - wskaźnik na strukturę pojazdu do zapisania
+ * Zapisanie wjazdu pojazdu na parking do pliku
+ * @param parkingEntry - wskaźnik na strukturę wjazdu na parking
  */
 void saveParkingEntry(ParkingEntry *parkingEntry) {
     // ściezka do pliku
