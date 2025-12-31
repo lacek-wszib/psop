@@ -55,9 +55,18 @@ void checkDatabaseCapacity(int newVehicleCount) {
 void addVehicle(Vehicle *newVehicle) {
     // sprawdzenie pojemności bazy
     checkDatabaseCapacity(vehicleCount + 1);
+    // znalezienie miejsca wstawienia (alfabetycznie wg numeru rejestracyjnego)
+    int pos = 0;
+    while (pos < vehicleCount && strcmp(vehicles[pos].licencePlate, newVehicle->licencePlate) < 0) {
+        pos++;
+    }
+    // przesunięcie elementów w prawo
+    for (int j = vehicleCount; j > pos; j--) {
+        vehicles[j] = vehicles[j - 1];
+    }
     // dodanie pojazdu do bazy
+    vehicles[pos] = *newVehicle;
     vehicleCount++;
-    vehicles[vehicleCount - 1] = *newVehicle;
 }
 
 void addVehicleAndSave(Vehicle *newVehicle) {

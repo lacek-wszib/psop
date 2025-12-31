@@ -156,7 +156,11 @@ void printVehicleList() {
     for (int i = 0; i < parkedCars.parkedCarCount; i++) {
         ParkingEntry *parkingEntry = &parkedCars.parkedCars[i];
         Vehicle *vehicle = findVehicle(parkingEntry->licencePlate);
-        printf("%s %s %s\n", parkingEntry->licencePlate, vehicle->brand, vehicle->model);
+        if (vehicle != NULL) {
+            printf("%s %s %s\n", parkingEntry->licencePlate, vehicle->brand, vehicle->model);
+        } else {
+            printf("%s (brak danych w bazie)\n", parkingEntry->licencePlate);
+        }
     }
 }
 

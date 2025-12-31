@@ -43,14 +43,24 @@ void freeParkingDatabase() {
 }
 
 int registerVehicleEntry(LicencePlate licencePlate) {
-    if (parkedCarsCount < getParkingCapacity()) {
-        parkedCarsCount++;
+    if (parkedCarsCount < parkedCarsCapacity) {
         // informacje o pojeździe na parkingu
         ParkingEntry parkingEntry;
         strncpy(parkingEntry.licencePlate, licencePlate, sizeof(parkingEntry.licencePlate) - 1);
         parkingEntry.entryTime = time(NULL);
+        // znalezienie miejsca wstawienia (alfabetycznie)
+        int pos = 0;
+        while (pos < parkedCarsCount
+            && strcmp(parkedCars[pos].licencePlate, licencePlate) < 0) {
+            pos++;
+        }
+        // przesunięcie elementów w prawo
+        for (int j = parkedCarsCount; j > pos; j--) {
+            parkedCars[j] = parkedCars[j - 1];
+        }
         // dodanie pojazdu do tablicy
-        parkedCars[parkedCarsCount - 1] = parkingEntry;
+        parkedCars[pos] = parkingEntry;
+        parkedCarsCount++;
         // sukces
         return 1;
     }
