@@ -35,13 +35,13 @@ void displayVehicleManagmentMenu() {
         }
 
         switch (vehicleMenuChoice) {
-            case (1):
+            case 1:
                 printAllVehicleList();
                 break;
-            case (2):
+            case 2:
                 handleVehicleAdd();
                 break;
-            case (3):
+            case 3:
                 handleVehicleRemove();
                 break;
         }
@@ -50,7 +50,7 @@ void displayVehicleManagmentMenu() {
 
 void printAllVehicleList() {
     // pobranie listy pojazdów
-    VehicleDatabase vehicleDatabase = getVehicleDatabase();
+    const VehicleDatabase vehicleDatabase = getVehicleDatabase();
     if (vehicleDatabase.vehicleCount == 0) {
         printf("Brak pojazdów w bazie\n");
         return;

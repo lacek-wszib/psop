@@ -209,9 +209,9 @@ ParkingTime calculateParkingTime(ParkingEntry *parkingEntry) {
     // struktura z czasem postoju
     ParkingTime parkingTime;
     // wyliczenie czasu postoju
-    time_t currentTime = time(NULL);
-    double parkedSeconds = difftime(currentTime, parkingEntry->entryTime);
-    int parkedMinutes = (int) (parkedSeconds / 60);
+    const time_t currentTime = time(NULL);
+    const double parkedSeconds = difftime(currentTime, parkingEntry->entryTime);
+    const int parkedMinutes = (int) (parkedSeconds / 60);
     parkingTime.hours = (int) (parkedMinutes / 60);
     parkingTime.minutes = parkedMinutes % 60;
     // wynik

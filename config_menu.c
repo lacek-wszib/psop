@@ -34,14 +34,14 @@ void displayConfigMenu() {
         }
 
         switch (configMenuChoice) {
-            case (1):
+            case 1:
                 printConfig();
                 break;
-            case (2):
+            case 2:
                 handleParkingSizeChange();
                 configChanged = 1;
                 break;
-            case (0):
+            case 0:
                 if (configChanged && saveConfig()) {
                     printf("Zapisano konfigurację\n");
                 }

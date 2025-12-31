@@ -137,7 +137,7 @@ void handleParkingCheckOut() {
     ParkingEntry *parkingEntry = findParkingEntry(licencePlate);
     if (parkingEntry != NULL) {
         // wyliczenie czasu postoju
-        ParkingTime parkingTime = calculateParkingTime(parkingEntry);
+        const ParkingTime parkingTime = calculateParkingTime(parkingEntry);
         // komunikat dla użytkownika
         printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n", licencePlate);
         printf("Czas postoju pojazdu wyniósł: %d:%02d\n", parkingTime.hours, parkingTime.minutes);
@@ -151,7 +151,7 @@ void handleParkingCheckOut() {
  */
 void printVehicleList() {
     // pobranie listy zajętych miejsc
-    ParkingDatabase parkedCars = getParkingDatabase();
+    const ParkingDatabase parkedCars = getParkingDatabase();
     if (parkedCars.parkedCarCount == 0) {
         printf("Brak pojazdów na parkingu\n");
         return;
@@ -169,7 +169,7 @@ void printVehicleList() {
                 strftime(timeBuf, sizeof timeBuf, "%Y-%m-%d %H:%M", localDateTime);
             }
             // wyliczenie czasu postoju
-            ParkingTime parkingTime = calculateParkingTime(parkingEntry);
+            const ParkingTime parkingTime = calculateParkingTime(parkingEntry);
             // wyświetlenie informacji o parkowaniu
             printf("%s %s %s [%s] [%d:%02d]\n",
                    parkingEntry->licencePlate, vehicle->brand, vehicle->model, timeBuf, parkingTime.hours, parkingTime.minutes);
@@ -183,7 +183,7 @@ void printVehicleList() {
  * Wypisanie statystyk parkingu
  */
 void printStatistics() {
-    ParkingStatistics parkingStatistics = getParkingStatistics();
+    const ParkingStatistics parkingStatistics = getParkingStatistics();
     printf("Ilość zajętych miejsc parkingowych: %d\n", parkingStatistics.placesOccupied);
     printf("Ilość wolnych miejsc parkingowych: %d\n", parkingStatistics.placesFree);
     printf("Ilość wszystkich miejsc parkingowych: %d\n", parkingStatistics.placesTotal);

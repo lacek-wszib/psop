@@ -41,7 +41,7 @@ void freeVehicleDatabase() {
  */
 void checkDatabaseCapacity(int newVehicleCount) {
     if (newVehicleCount > vehicleCapacity) {
-        int newCapacity = vehicleCapacity * 2;
+        const int newCapacity = vehicleCapacity * 2;
         Vehicle *tmp = realloc(vehicles, newCapacity * sizeof(Vehicle));
         if (!tmp) {
             printf("Błąd alokacji pamięci dla bazy pojazdów\n");
@@ -82,11 +82,10 @@ void addVehicleAndSave(Vehicle *newVehicle) {
  * @param vehicle - wskaźnik na strukturę pojazdu do zapisania
  */
 void saveVehicle(Vehicle *vehicle) {
-    FILE *vehicleFile;
     // otwarcie pliku do zapisu
     char fileName[256];
     getVehicleFileName(fileName, sizeof fileName, vehicle->licencePlate);
-    vehicleFile = fopen(fileName, "w");
+    FILE *vehicleFile = fopen(fileName, "w");
     // zapisanie tekstu do pliku
     fprintf(vehicleFile, "%s\n%s", vehicle->brand, vehicle->model);
     // zamknięcie pliku

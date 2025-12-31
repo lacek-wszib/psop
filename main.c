@@ -24,9 +24,9 @@ int main(void) {
     initParkingDatabase(getParkingCapacity());
     // wczytanie danych
     printf("Wczytanie danych...\n");
-    int vehiclesCount = loadVehicles();
+    const int vehiclesCount = loadVehicles();
     printf("Wczytano %d pojazdów\n", vehiclesCount);
-    int parkingEntryCount = loadParkingEntries();
+    const int parkingEntryCount = loadParkingEntries();
     printf("Wczytano %d postojów\n", parkingEntryCount);
 
     // wyświetlenie menu głównego

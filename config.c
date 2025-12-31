@@ -27,9 +27,8 @@ void setParkingCapacity(int newParkingCapacity) {
 }
 
 int loadConfig() {
-    FILE *configFile;
     // otwarcie pliku do odczytu
-    configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "r");
+    FILE *configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "r");
     if (configFile == NULL) {
         printf("Nie można otworzyć pliku konfiguracyjnego\n");
         return 0;
@@ -49,9 +48,8 @@ int loadConfig() {
 }
 
 int saveConfig() {
-    FILE *configFile;
     // otwarcie pliku do zapisu
-    configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "w");
+    FILE *configFile = fopen(CAPACITY_CONFIG_FILE_PATH, "w");
     // zapisanie tekstu do pliku
     fprintf(configFile, "%d", parkingCapacity);
     // zamknięcie pliku
