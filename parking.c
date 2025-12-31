@@ -89,6 +89,15 @@ int registerVehicleEntry(LicencePlate licencePlate) {
     return 0; // brak miejsc
 }
 
+ParkingEntry *findParkingEntry(LicencePlate licencePlate) {
+    for (int i = 0; i < parkedCarsCount; i++) {
+        if (strcmp(parkedCars[i].licencePlate, licencePlate) == 0) {
+            return &parkedCars[i];
+        }
+    }
+    return NULL; // brak wpisu
+}
+
 /**
  * Zapisanie pojazdu do pliku
  * @param vehicle - wskaźnik na strukturę pojazdu do zapisania
@@ -194,6 +203,19 @@ int checkParkingVehicle(LicencePlate licencePlate) {
         }
     }
     return 0; // pojazd nie znaleziony
+}
+
+ParkingTime calculateParkingTime(ParkingEntry *parkingEntry) {
+    // struktura z czasem postoju
+    ParkingTime parkingTime;
+    // wyliczenie czasu postoju
+    time_t currentTime = time(NULL);
+    double parkedSeconds = difftime(currentTime, parkingEntry->entryTime);
+    int parkedMinutes = (int) (parkedSeconds / 60);
+    parkingTime.hours = (int) (parkedMinutes / 60);
+    parkingTime.minutes = parkedMinutes % 60;
+    // wynik
+    return parkingTime;
 }
 
 ParkingStatistics getParkingStatistics() {

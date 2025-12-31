@@ -100,7 +100,7 @@ void handleParkingCheckIn() {
         printf("Nie znaleziono pojazdu w bazie, czy go dodać? (t/n) >>");
         char userInput[3];
         if (readLineFromInput(userInput, sizeof userInput, stdin)
-              && (userInput[0] == 't' || userInput[0] == 'T')) {
+            && (userInput[0] == 't' || userInput[0] == 'T')) {
             handleAddVehicle(licencePlate);
         } else {
             printf("Anulowano rejestrację wjazdu\n");
@@ -133,9 +133,14 @@ void handleParkingCheckOut() {
     } while (!inputStatus);
     toUpperCharArray(licencePlate, sizeof licencePlate);
 
-    // rejestacja wyjazdu
-    if (registerVehicleDeparture(licencePlate)) {
+    // wyszukanie postoju w bazie
+    ParkingEntry *parkingEntry = findParkingEntry(licencePlate);
+    if (parkingEntry != NULL) {
+        // wyliczenie czasu postoju
+        ParkingTime parkingTime = calculateParkingTime(parkingEntry);
+        // komunikat dla użytkownika
         printf("Zarejestrowano wyjazd pojazdu o numerze rejestracyjnym %s\n", licencePlate);
+        printf("Czas postoju pojazdu wyniósł: %d:%02d\n", parkingTime.hours, parkingTime.minutes);
     } else {
         printf("Brak pojazdu o numerze rejestracyjnym %s na parkingu\n", licencePlate);
     }
@@ -157,7 +162,17 @@ void printVehicleList() {
         ParkingEntry *parkingEntry = &parkedCars.parkedCars[i];
         Vehicle *vehicle = findVehicle(parkingEntry->licencePlate);
         if (vehicle != NULL) {
-            printf("%s %s %s\n", parkingEntry->licencePlate, vehicle->brand, vehicle->model);
+            // konwersja czasu
+            char timeBuf[17] = "brak czasu";
+            struct tm *localDateTime = localtime(&parkingEntry->entryTime);
+            if (localDateTime) {
+                strftime(timeBuf, sizeof timeBuf, "%Y-%m-%d %H:%M", localDateTime);
+            }
+            // wyliczenie czasu postoju
+            ParkingTime parkingTime = calculateParkingTime(parkingEntry);
+            // wyświetlenie informacji o parkowaniu
+            printf("%s %s %s [%s] [%d:%02d]\n",
+                   parkingEntry->licencePlate, vehicle->brand, vehicle->model, timeBuf, parkingTime.hours, parkingTime.minutes);
         } else {
             printf("%s (brak danych w bazie)\n", parkingEntry->licencePlate);
         }
@@ -175,7 +190,6 @@ void printStatistics() {
 }
 
 void handleAddVehicle(LicencePlate licencePlate) {
-
     // sprawdzenie czy pojazd już jest w bazie
     if (checkVehicle(licencePlate)) {
         printf("Pojazd o numerze rejestracyjnym %s już znajduje się w bazie\n", licencePlate);

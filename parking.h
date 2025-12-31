@@ -47,6 +47,14 @@ typedef struct parkingDatabase {
 } ParkingDatabase;
 
 /**
+ * Struktura reprezentująca czas postoju na parkingu
+ */
+typedef struct parkingTime {
+    int hours;
+    int minutes;
+} ParkingTime;
+
+/**
  * Rejestracja wjazdu pojazdu na parking
  * @param licencePlate - numer rejestracyjny pojazdu
  * @return 1 jeśli zarejestrowano wjazd, 0 jeśli brak miejsc
@@ -59,6 +67,13 @@ int registerVehicleEntry(LicencePlate licencePlate);
  * @return 1 jeśli zarejestrowano wyjazd, 0 jeśli pojazdu nie znaleziono
  */
 int registerVehicleDeparture(LicencePlate licencePlate);
+
+/**
+ * Wyszukanie wpisu parkingowego na podstawie numeru rejestracyjnego pojazdu
+ * @param licencePlate  - numer rejestracyjny pojazdu
+ * @return wskaźnik na strukturę wpisu parkingowego jeśli znaleziono, NULL jeśli nie znaleziono
+ */
+ParkingEntry *findParkingEntry(LicencePlate licencePlate);
 
 /**
  * Pobranie statystyk parkingu
@@ -90,5 +105,12 @@ int getParkingFreePlaces();
  * @return liczba wczytanych pojazdów
  */
 int loadParkingEntries();
+
+/**
+ * Wyliczenie czasu postoju pojazu
+ * @param parkingEntry dane postoju pojazdu
+ * @return czas postoju pojazdu
+ */
+ParkingTime calculateParkingTime(ParkingEntry *parkingEntry);
 
 #endif
