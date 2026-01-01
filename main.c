@@ -5,7 +5,7 @@
 #include "config.h"
 
 const char PROGRAM_NAME[] = "P.S.O.P - Przyjazny System Obsługi Parkingu";
-const char PROGRAM_VERSION[] = "1.0.0";
+const char PROGRAM_VERSION[] = "1.0.1";
 const char PROGRAM_AUTHOR[] = "Aleksander Łacek";
 const char TITLE_SEPARATOR[] = "===========================================";
 
