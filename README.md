@@ -1,4 +1,4 @@
-# Przyjazny System Zarządzania Parkingiem (PSOP)
+# Przyjazny System Obsługi Parkingu (PSOP)
 
 Projekt zaliczeniowy z Podstaw Informatyki - I semestr Informatyki.
 
