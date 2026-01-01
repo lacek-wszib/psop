@@ -10,6 +10,13 @@ typedef char Brand[64];
 typedef char Model[64];
 
 /**
+ * Minimalne długości danych pojazdu
+ */
+#define MIN_LICENCE_PLATE_LENGTH 3
+#define MIN_BRAND_LENGTH 2
+#define MIN_MODEL_LENGTH 1
+
+/**
  * Struktura reprezentująca pojazd
  */
 typedef struct vehicle {

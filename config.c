@@ -36,7 +36,11 @@ bool loadConfig() {
     }
     // odczyt zawartości
     char configData[10];
-    fgets(configData, 10, configFile);
+    if (!fgets(configData, 10, configFile)) {
+        printf("Błąd podczas odczytu konfiguracji ilości miejsc parkingowych\n");
+        fclose(configFile);
+        exit(EXIT_FAILURE);
+    }
     if (sscanf(configData, "%d", &parkingCapacity) != 1) {
         printf("Błędny plik konfiguracyjny\n");
         // zamknięcie pliku

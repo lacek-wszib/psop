@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "input_utils.h"
 #include "parking.h"
 #include "vehicle.h"
@@ -9,7 +11,7 @@ void handleVehicleAdd();
 void handleVehicleRemove();
 
 
-void displayVehicleManagmentMenu() {
+void displayVehicleManagementMenu() {
     char userInput[3];
     int vehicleMenuChoice = -1;
 
@@ -65,14 +67,22 @@ void printAllVehicleList() {
 
 void handleVehicleAdd() {
     Vehicle newVehicle;
-    int inputStatus = 0;
+    int inputStatus = false;
 
     printf("Dodanie pojazdu: \n");
-    // numer rejstracyjny
+    // numer rejestracyjny
     do {
         printf("Podaj numer rejestracyjny >>");
         inputStatus = readLineFromInput(newVehicle.licencePlate, sizeof newVehicle.licencePlate, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || !isAlphanumericOnly(newVehicle.licencePlate)
+            || strlen(newVehicle.licencePlate) < MIN_LICENCE_PLATE_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(newVehicle.licencePlate) == 0) {
+                printf("Anulowano dodanie pojazdu\n");
+                return;
+            }
+            inputStatus = false;
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
@@ -86,18 +96,32 @@ void handleVehicleAdd() {
 
     // marka pojazdu
     do {
-        printf("Podaj marke pojazdu >>");
+        printf("Podaj markę pojazdu >>");
         inputStatus = readLineFromInput(newVehicle.brand, sizeof newVehicle.brand, stdin);
-        if (!inputStatus) {
-            printf("Nieprawidłowa marka pojadu\n");
+        if (!inputStatus
+            || strlen(newVehicle.brand) < MIN_BRAND_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(newVehicle.brand) == 0) {
+                printf("Anulowano dodanie pojazdu\n");
+                return;
+            }
+            inputStatus = false;
+            printf("Nieprawidłowa marka pojazdu\n");
         }
     } while (!inputStatus);
     // model pojazdu
     do {
         printf("Podaj model pojazdu >>");
         inputStatus = readLineFromInput(newVehicle.model, sizeof newVehicle.model, stdin);
-        if (!inputStatus) {
-            printf("Nieprawidłowy model pojadu\n");
+        if (!inputStatus
+            || strlen(newVehicle.model) < MIN_MODEL_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(newVehicle.model) == 0) {
+                printf("Anulowano dodanie pojazdu\n");
+                return;
+            }
+            inputStatus = false;
+            printf("Nieprawidłowy model pojazdu\n");
         }
     } while (!inputStatus);
 
@@ -107,12 +131,20 @@ void handleVehicleAdd() {
 
 void handleVehicleRemove() {
     LicencePlate licencePlate;
-    int inputStatus = 0;
-    // numer rejstracyjny
+    int inputStatus = false;
+    // numer rejestracyjny
     do {
         printf("Podaj numer rejestracyjny pojazdu do usunięcia>>");
         inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || !isAlphanumericOnly(licencePlate)
+            || strlen(licencePlate) < MIN_LICENCE_PLATE_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(licencePlate) == 0) {
+                printf("Anulowano usunięcie pojazdu\n");
+                return;
+            }
+            inputStatus = false;
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);

@@ -4,6 +4,6 @@
 /**
  * Wyświetlenie menu zarządzania bazą pojazdów
  */
-void displayVehicleManagmentMenu();
+void displayVehicleManagementMenu();
 
 #endif
