@@ -11,7 +11,7 @@ void handleParkingCheckIn();
 void handleParkingCheckOut();
 void printVehicleList();
 void printStatistics();
-void handleAddVehicle(LicencePlate licencePlate);
+bool handleAddVehicle(LicencePlate licencePlate);
 
 void displayMainMenu() {
     // wybór użytkownika
@@ -58,7 +58,7 @@ void displayMainMenu() {
                 printStatistics();
                 break;
             case 5:
-                displayVehicleManagmentMenu();
+                displayVehicleManagementMenu();
                 break;
             case 6:
                 displayConfigMenu();
@@ -79,11 +79,19 @@ void handleParkingCheckIn() {
 
     // wprowadzenie numeru rejestracyjnego
     LicencePlate licencePlate;
-    printf("Podaj numer rejestracyjny >>");
-    int inputStatus = 0;
+    int inputStatus = false;
     do {
+        printf("Podaj numer rejestracyjny >>");
         inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || !isAlphanumericOnly(licencePlate)
+            || strlen(licencePlate) < MIN_LICENCE_PLATE_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(licencePlate) == 0) {
+                printf("Anulowano rejestrację wjazdu\n");
+                return;
+            }
+            inputStatus = false;
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
@@ -101,7 +109,10 @@ void handleParkingCheckIn() {
         char userInput[3];
         if (readLineFromInput(userInput, sizeof userInput, stdin)
             && (userInput[0] == 't' || userInput[0] == 'T')) {
-            handleAddVehicle(licencePlate);
+            // dodanie pojazdu do bazy
+            if (!handleAddVehicle(licencePlate)) {
+                return;
+            }
         } else {
             printf("Anulowano rejestrację wjazdu\n");
             return;
@@ -123,11 +134,19 @@ void handleParkingCheckIn() {
 void handleParkingCheckOut() {
     // wprowadzenie numeru rejestracyjnego
     LicencePlate licencePlate;
-    printf("Podaj numer rejestracyjny >>");
-    int inputStatus = 0;
+    int inputStatus = false;
     do {
+        printf("Podaj numer rejestracyjny >>");
         inputStatus = readLineFromInput(licencePlate, sizeof licencePlate, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || !isAlphanumericOnly(licencePlate)
+            || strlen(licencePlate) < MIN_LICENCE_PLATE_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(licencePlate) == 0) {
+                printf("Anulowano rejestrację wyjazdu\n");
+                return;
+            }
+            inputStatus = false;
             printf("Nieprawidłowy numer rejestracyjny\n");
         }
     } while (!inputStatus);
@@ -191,22 +210,29 @@ void printStatistics() {
     printf("Ilość wszystkich miejsc parkingowych: %d\n", parkingStatistics.placesTotal);
 }
 
-void handleAddVehicle(LicencePlate licencePlate) {
+bool handleAddVehicle(LicencePlate licencePlate) {
     // sprawdzenie czy pojazd już jest w bazie
     if (checkVehicle(licencePlate)) {
         printf("Pojazd o numerze rejestracyjnym %s już znajduje się w bazie\n", licencePlate);
-        return;
+        return false;
     }
 
     Vehicle newVehicle;
     strcpy(newVehicle.licencePlate, licencePlate);
-    int inputStatus = 0;
+    int inputStatus = false;
 
     // marka pojazdu
     do {
         printf("Podaj marke pojazdu >>");
         inputStatus = readLineFromInput(newVehicle.brand, sizeof newVehicle.brand, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || strlen(newVehicle.brand) < MIN_BRAND_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(newVehicle.brand) == 0) {
+                printf("Anulowano dodanie pojazdu\n");
+                return false;
+            }
+            inputStatus = false;
             printf("Nieprawidłowa marka pojadu\n");
         }
     } while (!inputStatus);
@@ -214,11 +240,20 @@ void handleAddVehicle(LicencePlate licencePlate) {
     do {
         printf("Podaj model pojazdu >>");
         inputStatus = readLineFromInput(newVehicle.model, sizeof newVehicle.model, stdin);
-        if (!inputStatus) {
+        if (!inputStatus
+            || strlen(newVehicle.model) < MIN_MODEL_LENGTH) {
+            // pusty input - anulacja
+            if (strlen(newVehicle.model) == 0) {
+                printf("Anulowano dodanie pojazdu\n");
+                return false;
+            }
+            inputStatus = false;
             printf("Nieprawidłowy model pojadu\n");
         }
     } while (!inputStatus);
 
     // dodanie pojazdu do bazy
     addVehicleAndSave(&newVehicle);
+
+    return true;
 }

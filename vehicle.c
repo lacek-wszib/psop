@@ -6,9 +6,8 @@
 #include "config.h"
 #include "string_utils.h"
 
-
 // początkowy rozmiar bazy pojazdów
-const int INITIAL_DATABASE_SIZE = 2;
+#define INITIAL_DATABASE_SIZE 10
 
 void getVehicleFileName(char *fileName, size_t size, LicencePlate licencePlate);
 void saveVehicle(Vehicle *vehicle);

@@ -16,4 +16,11 @@ void toUpperCharArray(char string[], size_t size);
  */
 void stringCopy(char *destination, size_t dstSize, char *source);
 
+/**
+ * Sprawdzenie czy ciąg znaków zawiera tylko znaki alfanumeryczne
+ * @param string  - ciąg znaków do sprawdzenia
+ * @return true jeśli ciąg zawiera tylko znaki alfanumeryczne, false w przeciwnym wypadku
+ */
+bool isAlphanumericOnly(const char *string);
+
 #endif
